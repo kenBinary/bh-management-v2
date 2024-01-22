@@ -7,7 +7,7 @@ import { GoPeople } from "react-icons/go";
 
 export default function NavBar() {
     return (
-        <HStack paddingLeft={"4"} paddingRight={"4"}>
+        <HStack paddingLeft={"4"} paddingRight={"4"} h="10%">
             <HStack>
                 <GoPeople size={24}></GoPeople>
                 <Text fontWeight={"semibold"} fontSize={"lg"}>Roomster</Text>

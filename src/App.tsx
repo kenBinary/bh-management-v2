@@ -5,7 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import RoomManagement from "./pages/RoomManagement";
 import TenantManagement from "./pages/TenantManagement";
 import PaymentManagement from "./pages/PaymentManagement";
-import { IconContext } from "react-icons";
+// import { IconContext } from "react-icons";
 
 function App() {
   return (
