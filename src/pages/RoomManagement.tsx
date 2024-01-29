@@ -3,12 +3,48 @@ import {
     VStack, Text, Heading, HStack,
     Button, Spacer,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import RoomCard from "../components/room-management/RoomCard";
 
+interface RoomList {
+    room_number: number;
+    headcount: number;
+    is_full: number;
+    room_fee: number;
+    room_status: "vacant" | "occupied";
+    room_type: "single room" | "double room";
+}
+interface RoomData {
+    roomList: Array<RoomList>;
+}
 
 export default function RoomManagement() {
+
+    const [roomData, setRoomData] = useState<RoomData>({
+        roomList: [],
+    });
+
+    useEffect(() => {
+        const roomList = fetch("http://localhost:3000/room", {
+            method: "GET"
+        }).then((response) => {
+            return response.json();
+        });
+
+        Promise.all([
+            roomList, roomList
+        ]).then(([roomList]) => {
+            setRoomData({
+                roomList: roomList
+            });
+        }).catch((error) => {
+            console.log(error);
+        });
+
+    }, []);
     return (
         <Grid padding={4} gap="2" h="90%" gridTemplateRows="1fr 3fr" gridTemplateColumns="1fr 4fr">
+
             <GridItem gridColumn="1/2">
                 <HStack align="center">
                     <Heading fontSize='2xl'>Filter</Heading>
@@ -30,42 +66,32 @@ export default function RoomManagement() {
                     </VStack>
                 </RadioGroup>
             </GridItem>
+
             <GridItem gridColumn="1/2">
                 <VStack>
                     <Heading fontSize="lg">Room Overview</Heading>
                 </VStack>
             </GridItem>
+
             <GridItem gridColumn="2/3" gridRow="1/3" display='flex' flexDirection='column'>
                 <Heading flexShrink="0" flexBasis='10%'>Room List</Heading>
                 <VStack overflow="auto" flexShrink='0' flexGrow='1' flexBasis='90%'>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
-                    <RoomCard></RoomCard>
+                    {(roomData.roomList.length < 1) ?
+                        <div>loading</div>
+                        :
+                        roomData.roomList.map((e) => {
+                            return (
+                                <RoomCard
+                                    key={e.room_number}
+                                    roomNumber={e.room_number} roomFee={e.room_fee}
+                                    roomStatus={e.room_status} roomType={e.room_type}
+                                ></RoomCard>
+                            );
+                        })
+                    }
                 </VStack>
             </GridItem>
+
         </Grid>
     );
 }
