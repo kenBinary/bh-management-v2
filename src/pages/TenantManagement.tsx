@@ -1,12 +1,15 @@
 import {
-    Flex, List,
+    Flex, List, useDisclosure,
+    Heading, Button,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+
 import TenantDetail from "../components/tenant-management/TenantDetail";
 import LeaseDetail from "../components/tenant-management/LeaseDetail";
 import PaymentHistory from "../components/tenant-management/PaymentHistory";
 import NecessityList from "../components/tenant-management/NecessityList";
 import TenantListItem from "../components/tenant-management/TenantListItem";
+import AddTenantModel from "../components/tenant-management/AddTenantModal";
 
 interface TenantDetail {
     tenant_id: string;
@@ -23,6 +26,8 @@ interface TenantData {
 
 export default function TenantManagement() {
 
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
     const [tenantData, setTenantData] = useState<TenantData>({
         tenantList: [],
     });
@@ -36,7 +41,6 @@ export default function TenantManagement() {
         Promise.all([
             tenantList,
         ]).then(([tenantList]) => {
-            console.log(tenantList);
             setTenantData({
                 tenantList: tenantList,
             });
@@ -47,26 +51,38 @@ export default function TenantManagement() {
     }, []);
 
     return (
-        <Flex height="90%" padding="4" gap="2">
-            <List spacing="0.5" flex="1 0 20%" height="full" overflowY="auto" >
-                {
-                    (tenantData.tenantList.length < 1)
-                        ?
-                        <div>loading</div>
-                        :
-                        tenantData.tenantList.map((e) => {
-                            return (
-                                <TenantListItem name={`${e.first_name} ${e.last_name}`} />
-                            );
-                        })
-                }
-            </List>
+        <Flex height="90%" padding="4" gap="2" >
+            <AddTenantModel
+                isOpen={isOpen}
+                onClose={onClose}
+            ></AddTenantModel>
+
+            <Flex as="aside" flex="1 0 20%" direction="column">
+                <Flex paddingBottom="2" paddingTop="2" justifyContent="space-between">
+                    <Heading size="md">Tenant List</Heading>
+                    <Button size="sm" onClick={onOpen}>Add Tenant</Button>
+                </Flex>
+                <List spacing="0.5" flexGrow="1" overflowY="auto" >
+                    {
+                        (tenantData.tenantList.length < 1)
+                            ?
+                            <div>loading</div>
+                            :
+                            tenantData.tenantList.map((e) => {
+                                return (
+                                    <TenantListItem name={`${e.first_name} ${e.last_name}`} />
+                                );
+                            })
+                    }
+                </List>
+            </Flex>
+
             <Flex flex="4 0 80%" as="main" direction="column" overflowY="auto">
                 <TenantDetail></TenantDetail>
                 <LeaseDetail></LeaseDetail>
                 <PaymentHistory></PaymentHistory>
                 <NecessityList></NecessityList>
             </Flex>
-        </Flex>
+        </Flex >
     );
 }
