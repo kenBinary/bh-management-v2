@@ -9,19 +9,12 @@ import LeaseDetail from "../components/tenant-management/LeaseDetail";
 import PaymentHistory from "../components/tenant-management/PaymentHistory";
 import NecessityList from "../components/tenant-management/NecessityList";
 import TenantListItem from "../components/tenant-management/TenantListItem";
-import AddTenantModel from "../components/tenant-management/AddTenantModal";
+import AddTenantModal from "../components/tenant-management/AddTenantModal";
 
-interface TenantDetail {
-    tenant_id: string;
-    first_name: string;
-    last_name: string;
-    occupancy_status: number;
-    contact_number: number;
-    archive_status: number;
-}
+import { TenantSchema, getTenant } from "../components/tenant-management/services/TenantServices";
 
 interface TenantData {
-    tenantList: Array<TenantDetail>;
+    tenantList: Array<TenantSchema>;
 }
 
 export default function TenantManagement() {
@@ -32,6 +25,24 @@ export default function TenantManagement() {
         tenantList: [],
     });
 
+    const [selectedTenant, setSelectedTenant] = useState<TenantSchema>({
+        first_name: "",
+        last_name: "",
+        contact_number: 0,
+        tenant_id: "",
+        occupancy_status: 0,
+        archive_stauts: 0,
+    });
+
+    async function selectTenant(tenantId: string): Promise<"fail" | "success"> {
+        const response = await getTenant(tenantId);
+        if (response === "fail") {
+            return response;
+        }
+        setSelectedTenant(response[0]);
+        return "success";
+    }
+
     useEffect(() => {
         const tenantList = fetch("http://localhost:3000/tenant/", {
             method: "GET"
@@ -41,21 +52,21 @@ export default function TenantManagement() {
         Promise.all([
             tenantList,
         ]).then(([tenantList]) => {
+            setSelectedTenant(tenantList[0]);
             setTenantData({
                 tenantList: tenantList,
             });
         }).catch((error) => {
             console.log(error);
         });
-
     }, []);
 
     return (
         <Flex height="90%" padding="4" gap="2" >
-            <AddTenantModel
+            <AddTenantModal
                 isOpen={isOpen}
                 onClose={onClose}
-            ></AddTenantModel>
+            ></AddTenantModal>
 
             <Flex as="aside" flex="1 0 20%" direction="column">
                 <Flex paddingBottom="2" paddingTop="2" justifyContent="space-between">
@@ -70,7 +81,10 @@ export default function TenantManagement() {
                             :
                             tenantData.tenantList.map((e) => {
                                 return (
-                                    <TenantListItem name={`${e.first_name} ${e.last_name}`} />
+                                    <TenantListItem
+                                        tenant_id={e.tenant_id} name={`${e.first_name} ${e.last_name}`}
+                                        selectTenant={selectTenant}
+                                    />
                                 );
                             })
                     }
@@ -78,7 +92,9 @@ export default function TenantManagement() {
             </Flex>
 
             <Flex flex="4 0 80%" as="main" direction="column" overflowY="auto">
-                <TenantDetail></TenantDetail>
+                <TenantDetail
+                    tenantDetails={selectedTenant}
+                ></TenantDetail>
                 <LeaseDetail></LeaseDetail>
                 <PaymentHistory></PaymentHistory>
                 <NecessityList></NecessityList>
