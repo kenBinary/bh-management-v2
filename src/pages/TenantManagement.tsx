@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import TenantDetail from "../components/tenant-management/TenantDetail";
 import LeaseDetail from "../components/tenant-management/LeaseDetail";
 import PaymentHistory from "../components/tenant-management/PaymentHistory";
-import NecessityList from "../components/tenant-management/NecessityList";
 import TenantListItem from "../components/tenant-management/TenantListItem";
 import AddTenantModal from "../components/tenant-management/AddTenantModal";
 
@@ -95,9 +94,10 @@ export default function TenantManagement() {
                 <TenantDetail
                     tenantDetails={selectedTenant}
                 ></TenantDetail>
-                <LeaseDetail></LeaseDetail>
+                <LeaseDetail
+                    tenantDetail={selectedTenant}
+                ></LeaseDetail>
                 <PaymentHistory></PaymentHistory>
-                <NecessityList></NecessityList>
             </Flex>
         </Flex >
     );

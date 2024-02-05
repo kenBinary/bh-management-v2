@@ -1,12 +1,26 @@
 import {
     Flex, Heading, Text,
-    Box, Image, Grid
+    Box, Image, Grid, Button,
+    useDisclosure,
+
 } from "@chakra-ui/react";
 import { LiaCoinsSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
+import { useRef } from "react";
+import ContractDrawer from './ContractDrawer';
+import { TenantSchema } from "./services/TenantServices";
+interface LeaseDetail {
+    tenantDetail: TenantSchema;
+}
+export default function LeaseDetail({ tenantDetail }: LeaseDetail) {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const btnRef = useRef<null | HTMLButtonElement>(null);
 
-export default function LeaseDetail() {
     return (
         <Flex as="section" padding="4" boxShadow="md">
+            <ContractDrawer
+                isOpen={isOpen} onClose={onClose}
+                btnRef={btnRef} tenant={tenantDetail}
+            ></ContractDrawer>
             <Flex flex="1 0" direction="column" gap="2">
                 <Heading size="xs">Current Lease</Heading>
                 <Flex gap="8">
@@ -39,9 +53,12 @@ export default function LeaseDetail() {
                         <Text>End</Text>
                         <Text>---</Text>
                     </Flex>
-                    <Flex direction="column" flex="0 1 20%">
-                        <Text>Shared With</Text>
-                        <Text>Jack the Ripper</Text>
+                    <Flex direction="column" flex="0 1 20%" justifyContent="center">
+                        <Text>Contract Details</Text>
+                        <Button
+                            size="md" onClick={onOpen}
+                            ref={btnRef} colorScheme="teal"
+                        >contract</Button>
                     </Flex>
                 </Flex>
             </Flex>
