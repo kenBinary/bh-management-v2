@@ -5,9 +5,9 @@ import {
 
 } from "@chakra-ui/react";
 import { LiaCoinsSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
-import { useRef } from "react";
-import ContractDrawer from './ContractDrawer';
-import { TenantSchema } from "./services/TenantServices";
+import { useRef, useEffect, useState } from "react";
+import ContractDrawer from "./ContractDrawer";
+import { TenantSchema, ContractSchema, getContract } from "./services/TenantServices";
 interface LeaseDetail {
     tenantDetail: TenantSchema;
 }
@@ -15,11 +15,28 @@ export default function LeaseDetail({ tenantDetail }: LeaseDetail) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const btnRef = useRef<null | HTMLButtonElement>(null);
 
+    const [contract, setContract] = useState<ContractSchema | null>(null);
+    const tenantId = tenantDetail.tenant_id;
+
+    useEffect(() => {
+        if (isOpen) {
+            getContract(tenantId).then((data) => {
+                if (data === "fail") {
+                    setContract(null);
+                }
+                else {
+                    setContract(data[0]);
+                }
+            });
+        }
+    }, [isOpen, tenantId]);
+
     return (
         <Flex as="section" padding="4" boxShadow="md">
             <ContractDrawer
                 isOpen={isOpen} onClose={onClose}
                 btnRef={btnRef} tenant={tenantDetail}
+                contract={contract}
             ></ContractDrawer>
             <Flex flex="1 0" direction="column" gap="2">
                 <Heading size="xs">Current Lease</Heading>

@@ -74,3 +74,45 @@ export async function editTenant(tenantId: string, firstName: string, lastName: 
         return error.message;
     }
 }
+
+export interface ContractSchema {
+    contract_id: string;
+    tenant_id: string;
+    room_number?: number;
+    start_date: string;
+    end_date: string;
+    contract_status: number;
+}
+export async function getContract(tenantId: string): Promise<Array<ContractSchema> | "fail"> {
+    const url = `http://localhost:3000/tenant/${tenantId}/contracts/`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const contract: Array<ContractSchema> = await response.json();
+        if (contract.length < 1) {
+            return "fail";
+        }
+        return contract;
+    }
+    else return "fail";
+}
+
+export async function newContract(tenantId: string, startDate: string, endDate: string | null): Promise<"success" | "fail"> {
+    const url = "localhost:3000/contract/";
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            tenantId: tenantId,
+            startDate: startDate,
+            endDate: endDate,
+        })
+    });
+    if (response.ok) {
+        return "success";
+    }
+    return "fail";
+}
