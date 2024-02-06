@@ -18,6 +18,10 @@ export default function LeaseDetail({ tenantDetail }: LeaseDetail) {
     const [contract, setContract] = useState<ContractSchema | null>(null);
     const tenantId = tenantDetail.tenant_id;
 
+    function updateContract(contract: ContractSchema) {
+        setContract(contract);
+    }
+
     useEffect(() => {
         if (isOpen) {
             getContract(tenantId).then((data) => {
@@ -36,7 +40,7 @@ export default function LeaseDetail({ tenantDetail }: LeaseDetail) {
             <ContractDrawer
                 isOpen={isOpen} onClose={onClose}
                 btnRef={btnRef} tenant={tenantDetail}
-                contract={contract}
+                contract={contract} updateContract={updateContract}
             ></ContractDrawer>
             <Flex flex="1 0" direction="column" gap="2">
                 <Heading size="xs">Current Lease</Heading>

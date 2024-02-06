@@ -76,12 +76,12 @@ export async function editTenant(tenantId: string, firstName: string, lastName: 
 }
 
 export interface ContractSchema {
-    contract_id: string;
-    tenant_id: string;
-    room_number?: number;
-    start_date: string;
-    end_date: string;
-    contract_status: number;
+    contract_id?: string | null;
+    tenant_id?: string;
+    room_number?: number | null;
+    start_date: string | null;
+    end_date: string | null;
+    contract_status?: number;
 }
 export async function getContract(tenantId: string): Promise<Array<ContractSchema> | "fail"> {
     const url = `http://localhost:3000/tenant/${tenantId}/contracts/`;
@@ -98,8 +98,11 @@ export async function getContract(tenantId: string): Promise<Array<ContractSchem
     else return "fail";
 }
 
-export async function newContract(tenantId: string, startDate: string, endDate: string | null): Promise<"success" | "fail"> {
-    const url = "localhost:3000/contract/";
+export async function newContract(tenantId: string, startDate: string | null, endDate: string | null): Promise<"success" | "fail"> {
+    const url = "http://localhost:3000/contract/";
+    if (!startDate) {
+        return "fail";
+    }
     const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -110,6 +113,25 @@ export async function newContract(tenantId: string, startDate: string, endDate: 
             startDate: startDate,
             endDate: endDate,
         })
+    });
+    if (response.ok) {
+        return "success";
+    }
+    return "fail";
+}
+
+export async function editContract(tenantId: string, contract: ContractSchema): Promise<"fail" | "success"> {
+    const url = `http://localhost:3000/tenant/${tenantId}/contracts/${contract.contract_id}`;
+    const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            room_number: contract.room_number,
+            end_date: contract.end_date,
+            contract_status: contract.contract_status,
+        }),
     });
     if (response.ok) {
         return "success";
