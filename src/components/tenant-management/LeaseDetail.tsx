@@ -6,12 +6,13 @@ import {
 } from "@chakra-ui/react";
 import { LiaCoinsSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { useRef, useEffect, useState } from "react";
+import { format } from "date-fns";
 import ContractDrawer from "./ContractDrawer";
 import { TenantSchema, ContractSchema, getContract } from "../../services/tenant-management/TenantServices";
 interface LeaseDetail {
-    tenantDetail: TenantSchema;
+    selectedTenant: TenantSchema;
 }
-export default function LeaseDetail({ tenantDetail }: LeaseDetail) {
+export default function LeaseDetail({ selectedTenant: tenantDetail }: LeaseDetail) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const btnRef = useRef<null | HTMLButtonElement>(null);
 
@@ -22,18 +23,37 @@ export default function LeaseDetail({ tenantDetail }: LeaseDetail) {
         setContract(contract);
     }
 
+    // useEffect(() => {
+    //     getContract(tenantId).then((data) => {
+    //         if (data === "fail") {
+    //             setContract(null);
+    //         }
+    //         else {
+    //             setContract(data[0]);
+    //         }
+    //     });
+    //     // if (isOpen) {
+    //     //     getContract(tenantId).then((data) => {
+    //     //         if (data === "fail") {
+    //     //             setContract(null);
+    //     //         }
+    //     //         else {
+    //     //             setContract(data[0]);
+    //     //         }
+    //     //     });
+    //     // }
+    // }, [isOpen, tenantId]);
+
     useEffect(() => {
-        if (isOpen) {
-            getContract(tenantId).then((data) => {
-                if (data === "fail") {
-                    setContract(null);
-                }
-                else {
-                    setContract(data[0]);
-                }
-            });
-        }
-    }, [isOpen, tenantId]);
+        getContract(tenantId).then((data) => {
+            if (data === "fail") {
+                setContract(null);
+            }
+            else {
+                setContract(data[0]);
+            }
+        });
+    }, [tenantId]);
 
     return (
         <Flex as="section" padding="4" boxShadow="md">
@@ -55,24 +75,34 @@ export default function LeaseDetail({ tenantDetail }: LeaseDetail) {
                     </Box>
                     <Flex direction="column" flex="0 1 20%">
                         <Text>Room Number</Text>
-                        <Text>3</Text>
+                        <Text>----</Text>
                     </Flex>
                     <Grid flex="1 1 25%" gridTemplateColumns="1fr 4fr" gridTemplateRows="1fr 1fr">
                         <Box gridRow="1/3" alignSelf="start">
-                            <LiaCoinsSolid size="full"></LiaCoinsSolid>
+                            <LiaCoinsSolid size="100%"></LiaCoinsSolid>
                         </Box>
                         <Text gridColumn="2/3" gridRow="1/2">Monthly Rent</Text>
-                        <Text gridColumn="2/3" gridRow="2/3">2700 php</Text>
+                        <Text gridColumn="2/3" gridRow="2/3">----</Text>
                     </Grid>
                 </Flex>
                 <Flex gap="8">
                     <Flex direction="column" flex="0 1 20%">
                         <Text>Start</Text>
-                        <Text>Jan 1,1999</Text>
+                        {
+                            (contract) ?
+                                <Text>{contract.start_date}</Text>
+                                :
+                                <Text>----</Text>
+                        }
                     </Flex>
                     <Flex direction="column" flex="0 1 20%">
                         <Text>End</Text>
-                        <Text>---</Text>
+                        {
+                            (contract && contract.end_date !== null) ?
+                                <Text>{format(new Date(contract.end_date), "MMM d, yyyy")}</Text>
+                                :
+                                <Text>----</Text>
+                        }
                     </Flex>
                     <Flex direction="column" flex="0 1 20%" justifyContent="center">
                         <Text>Contract Details</Text>

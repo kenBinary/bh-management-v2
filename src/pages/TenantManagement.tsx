@@ -94,7 +94,7 @@ export default function TenantManagement() {
                     selectedTenant={selectedTenant} updateSelectedTenant={updateSelectedTenant}
                 ></TenantDetail>
                 <LeaseDetail
-                    tenantDetail={selectedTenant}
+                    selectedTenant={selectedTenant}
                 ></LeaseDetail>
                 <PaymentHistory></PaymentHistory>
             </Flex>
