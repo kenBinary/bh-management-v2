@@ -7,9 +7,7 @@ import {
 } from '@chakra-ui/react';
 
 import { useRef, useState } from 'react';
-import { TenantSchema } from './services/TenantServices';
-import { editTenant } from './services/TenantServices';
-
+import { TenantSchema, editTenant } from '../../services/tenant-management/TenantServices';
 interface EditTenant {
     isOpen: boolean;
     onClose: () => void;

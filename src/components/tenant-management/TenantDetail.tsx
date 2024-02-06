@@ -6,7 +6,7 @@ import {
 import { FaPhoneAlt } from "react-icons/fa";
 import EditTenantModal from "./EditTenantModal";
 
-import { TenantSchema } from "./services/TenantServices";
+import { TenantSchema } from "../../services/tenant-management/TenantServices";
 
 interface TenantDetail {
     tenantDetails: TenantSchema;

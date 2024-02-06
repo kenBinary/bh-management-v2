@@ -8,11 +8,11 @@ import {
     useToast
 } from '@chakra-ui/react';
 
-import { TenantSchema, editContract, newContract } from './services/TenantServices';
+import { TenantSchema, editContract, newContract } from '../../services/tenant-management/TenantServices';
 import DataTable from '../DataTable';
 import { Parties, GeneralTerms } from './ContractContent';
 
-import { ContractSchema } from './services/TenantServices';
+import { ContractSchema } from '../../services/tenant-management/TenantServices';
 import { useState } from 'react';
 interface Drawer {
     isOpen: boolean;

@@ -10,19 +10,14 @@ import PaymentHistory from "../components/tenant-management/PaymentHistory";
 import TenantListItem from "../components/tenant-management/TenantListItem";
 import AddTenantModal from "../components/tenant-management/AddTenantModal";
 
-import { TenantSchema, getTenant } from "../components/tenant-management/services/TenantServices";
+import { TenantSchema, getTenant } from "../services/tenant-management/TenantServices";
 
-interface TenantData {
-    tenantList: Array<TenantSchema>;
-}
 
 export default function TenantManagement() {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const [tenantData, setTenantData] = useState<TenantData>({
-        tenantList: [],
-    });
+    const [tenantList, setTenantList] = useState<Array<TenantSchema>>([]);
 
     const [selectedTenant, setSelectedTenant] = useState<TenantSchema>({
         first_name: "",
@@ -32,6 +27,10 @@ export default function TenantManagement() {
         occupancy_status: 0,
         archive_stauts: 0,
     });
+
+    function updateTenantList(tenantList: Array<TenantSchema>) {
+        setTenantList(tenantList);
+    }
 
     async function selectTenant(tenantId: string): Promise<"fail" | "success"> {
         const response = await getTenant(tenantId);
@@ -52,9 +51,7 @@ export default function TenantManagement() {
             tenantList,
         ]).then(([tenantList]) => {
             setSelectedTenant(tenantList[0]);
-            setTenantData({
-                tenantList: tenantList,
-            });
+            setTenantList(tenantList);
         }).catch((error) => {
             console.log(error);
         });
@@ -63,8 +60,8 @@ export default function TenantManagement() {
     return (
         <Flex height="90%" padding="4" gap="2" >
             <AddTenantModal
-                isOpen={isOpen}
-                onClose={onClose}
+                isOpen={isOpen} onClose={onClose}
+                tenantList={tenantList} updateTenantList={updateTenantList}
             ></AddTenantModal>
 
             <Flex as="aside" flex="1 0 20%" direction="column">
@@ -74,11 +71,11 @@ export default function TenantManagement() {
                 </Flex>
                 <List spacing="0.5" flexGrow="1" overflowY="auto" >
                     {
-                        (tenantData.tenantList.length < 1)
+                        (tenantList.length < 1)
                             ?
                             <div>loading</div>
                             :
-                            tenantData.tenantList.map((e) => {
+                            tenantList.map((e) => {
                                 return (
                                     <TenantListItem
                                         tenant_id={e.tenant_id} name={`${e.first_name} ${e.last_name}`}

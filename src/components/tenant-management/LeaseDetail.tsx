@@ -7,7 +7,7 @@ import {
 import { LiaCoinsSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { useRef, useEffect, useState } from "react";
 import ContractDrawer from "./ContractDrawer";
-import { TenantSchema, ContractSchema, getContract } from "./services/TenantServices";
+import { TenantSchema, ContractSchema, getContract } from "../../services/tenant-management/TenantServices";
 interface LeaseDetail {
     tenantDetail: TenantSchema;
 }

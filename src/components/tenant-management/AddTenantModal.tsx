@@ -7,14 +7,16 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { addTenant, TenantDetails } from './services/TenantServices';
+import { addTenant, TenantDetails, TenantSchema } from '../../services/tenant-management/TenantServices';
 
 interface AddTenant {
     isOpen: boolean;
     onClose: () => void;
+    updateTenantList: (tenantList: Array<TenantSchema>) => void;
+    tenantList: Array<TenantSchema>;
 }
 
-export default function AddTenantModal({ isOpen, onClose }: AddTenant) {
+export default function AddTenantModal({ isOpen, onClose, updateTenantList, tenantList }: AddTenant) {
 
     const toast = useToast();
 
@@ -24,24 +26,6 @@ export default function AddTenantModal({ isOpen, onClose }: AddTenant) {
         contact_number: 0,
     });
 
-    function firstNameInput(value: React.ChangeEvent<HTMLInputElement>) {
-        setTenantDetails({
-            ...tenantDetails,
-            first_name: value.target.value,
-        });
-    }
-    function lastNameInput(value: React.ChangeEvent<HTMLInputElement>) {
-        setTenantDetails({
-            ...tenantDetails,
-            last_name: value.target.value,
-        });
-    }
-    function contactInput(value: React.ChangeEvent<HTMLInputElement>) {
-        setTenantDetails({
-            ...tenantDetails,
-            contact_number: Number(value.target.value),
-        });
-    }
     return (
         <div>
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -57,7 +41,12 @@ export default function AddTenantModal({ isOpen, onClose }: AddTenant) {
                             <Input
                                 placeholder="e.g. Jhon"
                                 value={tenantDetails.first_name}
-                                onChange={firstNameInput}
+                                onChange={(e) => {
+                                    setTenantDetails({
+                                        ...tenantDetails,
+                                        first_name: e.target.value,
+                                    });
+                                }}
                             />
                         </FormControl>
 
@@ -66,7 +55,12 @@ export default function AddTenantModal({ isOpen, onClose }: AddTenant) {
                             <Input
                                 placeholder="e.g. Jhon"
                                 value={tenantDetails.last_name}
-                                onChange={lastNameInput}
+                                onChange={(e) => {
+                                    setTenantDetails({
+                                        ...tenantDetails,
+                                        last_name: e.target.value,
+                                    });
+                                }}
                             />
                         </FormControl>
 
@@ -76,7 +70,12 @@ export default function AddTenantModal({ isOpen, onClose }: AddTenant) {
                                 <NumberInputField
                                     placeholder='e.g. 0927323578'
                                     value={tenantDetails.contact_number}
-                                    onChange={contactInput}
+                                    onChange={(e) => {
+                                        setTenantDetails({
+                                            ...tenantDetails,
+                                            contact_number: Number(e.target.value),
+                                        });
+                                    }}
                                 />
                             </NumberInput>
                         </FormControl>
@@ -85,18 +84,19 @@ export default function AddTenantModal({ isOpen, onClose }: AddTenant) {
 
                     <ModalFooter>
                         <Button colorScheme='green' mr={3} onClick={async () => {
-                            const sucess = await addTenant(tenantDetails);
-                            if (sucess === "success") {
+                            const response = await addTenant(tenantDetails);
+                            if (response === "fail") {
                                 toast({
-                                    description: "Tenant Registration success",
-                                    status: 'success',
+                                    description: "Tenant Registration fail",
+                                    status: 'error',
                                     duration: 5000,
                                     isClosable: true,
                                 });
                             } else {
+                                updateTenantList([...tenantList, response]);
                                 toast({
-                                    description: "Tenant Registration fail",
-                                    status: 'error',
+                                    description: "Tenant Registration success",
+                                    status: 'success',
                                     duration: 5000,
                                     isClosable: true,
                                 });
