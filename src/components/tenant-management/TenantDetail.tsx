@@ -10,9 +10,10 @@ import { TenantSchema } from "../../services/tenant-management/TenantServices";
 
 interface TenantDetail {
     selectedTenant: TenantSchema;
+    updateSelectedTenant: (selectedTenant: TenantSchema) => void;
 }
 
-export default function TenantDetail({ selectedTenant }: TenantDetail) {
+export default function TenantDetail({ selectedTenant, updateSelectedTenant }: TenantDetail) {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const fullName = (selectedTenant.first_name !== "" && selectedTenant.last_name !== "") ? `${selectedTenant.first_name} ${selectedTenant.last_name}` : "";
@@ -23,7 +24,7 @@ export default function TenantDetail({ selectedTenant }: TenantDetail) {
         <Flex as="section" padding="4" boxShadow="md">
             <EditTenantModal
                 onClose={onClose} isOpen={isOpen}
-                selectedTenant={selectedTenant}
+                selectedTenant={selectedTenant} updateSelectedTenant={updateSelectedTenant}
             ></EditTenantModal>
             <Image
                 borderRadius="full"

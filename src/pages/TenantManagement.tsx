@@ -28,6 +28,10 @@ export default function TenantManagement() {
         archive_stauts: 0,
     });
 
+    function updateSelectedTenant(selectedTenant: TenantSchema) {
+        setSelectedTenant(selectedTenant);
+    }
+
     function updateTenantList(tenantList: Array<TenantSchema>) {
         setTenantList(tenantList);
     }
@@ -87,7 +91,7 @@ export default function TenantManagement() {
 
             <Flex flex="4 0 80%" as="main" direction="column" overflowY="auto">
                 <TenantDetail
-                    selectedTenant={selectedTenant}
+                    selectedTenant={selectedTenant} updateSelectedTenant={updateSelectedTenant}
                 ></TenantDetail>
                 <LeaseDetail
                     tenantDetail={selectedTenant}

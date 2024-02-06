@@ -6,27 +6,18 @@ import {
     FormLabel, useToast,
 } from '@chakra-ui/react';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { TenantSchema, editTenant } from '../../services/tenant-management/TenantServices';
 interface EditTenant {
     isOpen: boolean;
     onClose: () => void;
     selectedTenant: TenantSchema;
+    updateSelectedTenant: (selectedTenant: TenantSchema) => void;
 }
-interface NewTenant {
-    first_name: string;
-    last_name: string;
-    contact_number: number;
-}
-export default function EditTenantModal({ isOpen, onClose, selectedTenant }: EditTenant) {
+
+export default function EditTenantModal({ isOpen, onClose, selectedTenant, updateSelectedTenant }: EditTenant) {
 
     const toast = useToast();
-
-    const [newDetail, setNewDetail] = useState<NewTenant>({
-        first_name: "",
-        last_name: "",
-        contact_number: 0,
-    });
 
 
     // used this to get default value of input elements
@@ -34,15 +25,35 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant }: Edi
     const lastNameRef = useRef<HTMLInputElement | null>(null);
     const contactRef = useRef<HTMLInputElement | null>(null);
 
-    async function handleEdit(): Promise<"fail" | "success"> {
+    async function handleEdit() {
         const firstNameInput = firstNameRef.current;
         const lastNameInput = lastNameRef.current;
         const contactInput = contactRef.current;
+
         if (firstNameInput && lastNameInput && contactInput) {
             const response = await editTenant(selectedTenant.tenant_id, firstNameInput.value, lastNameInput.value, Number(contactInput.value));
-            return response;
+            if (response === "fail") {
+                toast({
+                    description: "Tenant Edit fail",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+            else {
+                updateSelectedTenant({
+                    ...selectedTenant,
+                    ...response,
+                });
+                toast({
+                    description: "Tenant Registration sucess",
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
         }
-        return "fail";
+        onClose();
     }
     return (
         <div>
@@ -59,12 +70,6 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant }: Edi
                             <Input
                                 ref={firstNameRef}
                                 defaultValue={selectedTenant.first_name}
-                                onChange={(e) => {
-                                    setNewDetail({
-                                        ...newDetail,
-                                        first_name: e.target.value,
-                                    });
-                                }}
                             ></Input>
                         </FormControl>
 
@@ -73,12 +78,6 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant }: Edi
                             <Input
                                 ref={lastNameRef}
                                 defaultValue={selectedTenant.last_name}
-                                onChange={(e) => {
-                                    setNewDetail({
-                                        ...newDetail,
-                                        last_name: e.target.value,
-                                    });
-                                }}
                             ></Input>
                         </FormControl>
 
@@ -90,12 +89,6 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant }: Edi
                             >
                                 <NumberInputField
                                     ref={contactRef}
-                                    onChange={(e) => {
-                                        setNewDetail({
-                                            ...newDetail,
-                                            contact_number: Number(e.target.value),
-                                        });
-                                    }}
                                 ></NumberInputField>
                             </NumberInput>
                         </FormControl>
@@ -105,26 +98,7 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant }: Edi
                     <ModalFooter>
                         <Button
                             colorScheme='green' mr={3}
-                            onClick={async () => {
-                                const status = await handleEdit();
-                                if (status === "fail") {
-                                    toast({
-                                        description: "Tenant Edit fail",
-                                        status: 'error',
-                                        duration: 5000,
-                                        isClosable: true,
-                                    });
-                                }
-                                else {
-                                    toast({
-                                        description: "Tenant Registration sucess",
-                                        status: 'success',
-                                        duration: 5000,
-                                        isClosable: true,
-                                    });
-                                }
-                                onClose();
-                            }}
+                            onClick={handleEdit}
                         >
                             Edit
                         </Button>

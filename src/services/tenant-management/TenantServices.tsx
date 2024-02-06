@@ -5,8 +5,8 @@ export interface TenantDetails {
 }
 export interface TenantSchema extends TenantDetails {
     tenant_id: string;
-    occupancy_status: number;
-    archive_stauts: number;
+    occupancy_status?: number;
+    archive_stauts?: number;
 }
 
 interface PostFetch {
@@ -45,7 +45,6 @@ export async function addTenant(tenantDetail: TenantDetails): Promise<"fail" | T
 export async function getTenant(tenantId: string): Promise<Array<TenantSchema> | "fail"> {
     try {
         const tenant = await fetch(`http://localhost:3000/tenant/${tenantId}`, {
-            // const tenant = await fetch(`http://localhost:3000/tenant/psg1yJ2kIz`, {
             method: "GET"
         });
         if (!tenant.ok) {
@@ -60,7 +59,7 @@ export async function getTenant(tenantId: string): Promise<Array<TenantSchema> |
     }
 }
 
-export async function editTenant(tenantId: string, firstName: string, lastName: string, contactNumber: number): Promise<"success" | "fail"> {
+export async function editTenant(tenantId: string, firstName: string, lastName: string, contactNumber: number): Promise<TenantSchema | "fail"> {
     const url = `http://localhost:3000/tenant/${tenantId}`;
     try {
         const response = await fetch(url, {
@@ -76,8 +75,11 @@ export async function editTenant(tenantId: string, firstName: string, lastName: 
         });
         if (!response.ok) {
             throw new Error("fail");
+        } else {
+            const { data } = await response.json();
+            return data;
         }
-        return "success";
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         return error.message;
