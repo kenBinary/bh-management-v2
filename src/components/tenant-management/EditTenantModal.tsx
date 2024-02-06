@@ -11,14 +11,14 @@ import { TenantSchema, editTenant } from '../../services/tenant-management/Tenan
 interface EditTenant {
     isOpen: boolean;
     onClose: () => void;
-    tenantDetails: TenantSchema;
+    selectedTenant: TenantSchema;
 }
 interface NewTenant {
     first_name: string;
     last_name: string;
     contact_number: number;
 }
-export default function EditTenantModal({ isOpen, onClose, tenantDetails }: EditTenant) {
+export default function EditTenantModal({ isOpen, onClose, selectedTenant }: EditTenant) {
 
     const toast = useToast();
 
@@ -27,25 +27,7 @@ export default function EditTenantModal({ isOpen, onClose, tenantDetails }: Edit
         last_name: "",
         contact_number: 0,
     });
-    // #TODO try to consolidate update setters to one setter
-    function updateFirstName(firstName: string): void {
-        setNewDetail({
-            ...newDetail,
-            first_name: firstName,
-        });
-    }
-    function updateLastName(lastName: string): void {
-        setNewDetail({
-            ...newDetail,
-            last_name: lastName,
-        });
-    }
-    function updateContact(contact: number): void {
-        setNewDetail({
-            ...newDetail,
-            contact_number: contact,
-        });
-    }
+
 
     // used this to get default value of input elements
     const firstNameRef = useRef<HTMLInputElement | null>(null);
@@ -57,12 +39,11 @@ export default function EditTenantModal({ isOpen, onClose, tenantDetails }: Edit
         const lastNameInput = lastNameRef.current;
         const contactInput = contactRef.current;
         if (firstNameInput && lastNameInput && contactInput) {
-            const response = await editTenant(tenantDetails.tenant_id, firstNameInput.value, lastNameInput.value, Number(contactInput.value));
+            const response = await editTenant(selectedTenant.tenant_id, firstNameInput.value, lastNameInput.value, Number(contactInput.value));
             return response;
         }
         return "fail";
     }
-
     return (
         <div>
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -77,9 +58,12 @@ export default function EditTenantModal({ isOpen, onClose, tenantDetails }: Edit
                             <FormLabel>First Name</FormLabel>
                             <Input
                                 ref={firstNameRef}
-                                defaultValue={tenantDetails.first_name}
+                                defaultValue={selectedTenant.first_name}
                                 onChange={(e) => {
-                                    updateFirstName(e.target.value);
+                                    setNewDetail({
+                                        ...newDetail,
+                                        first_name: e.target.value,
+                                    });
                                 }}
                             ></Input>
                         </FormControl>
@@ -88,9 +72,12 @@ export default function EditTenantModal({ isOpen, onClose, tenantDetails }: Edit
                             <FormLabel>Last Name</FormLabel>
                             <Input
                                 ref={lastNameRef}
-                                defaultValue={tenantDetails.last_name}
+                                defaultValue={selectedTenant.last_name}
                                 onChange={(e) => {
-                                    updateLastName(e.target.value);
+                                    setNewDetail({
+                                        ...newDetail,
+                                        last_name: e.target.value,
+                                    });
                                 }}
                             ></Input>
                         </FormControl>
@@ -98,13 +85,16 @@ export default function EditTenantModal({ isOpen, onClose, tenantDetails }: Edit
                         <FormControl isRequired>
                             <FormLabel>Contact Number</FormLabel>
                             <NumberInput
-                                defaultValue={tenantDetails.contact_number}
+                                defaultValue={selectedTenant.contact_number}
 
                             >
                                 <NumberInputField
                                     ref={contactRef}
                                     onChange={(e) => {
-                                        updateContact(Number(e.target.value));
+                                        setNewDetail({
+                                            ...newDetail,
+                                            contact_number: Number(e.target.value),
+                                        });
                                     }}
                                 ></NumberInputField>
                             </NumberInput>

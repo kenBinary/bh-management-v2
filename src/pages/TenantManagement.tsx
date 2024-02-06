@@ -56,14 +56,12 @@ export default function TenantManagement() {
             console.log(error);
         });
     }, []);
-
     return (
         <Flex height="90%" padding="4" gap="2" >
             <AddTenantModal
                 isOpen={isOpen} onClose={onClose}
                 tenantList={tenantList} updateTenantList={updateTenantList}
             ></AddTenantModal>
-
             <Flex as="aside" flex="1 0 20%" direction="column">
                 <Flex paddingBottom="2" paddingTop="2" justifyContent="space-between">
                     <Heading size="md">Tenant List</Heading>
@@ -89,7 +87,7 @@ export default function TenantManagement() {
 
             <Flex flex="4 0 80%" as="main" direction="column" overflowY="auto">
                 <TenantDetail
-                    tenantDetails={selectedTenant}
+                    selectedTenant={selectedTenant}
                 ></TenantDetail>
                 <LeaseDetail
                     tenantDetail={selectedTenant}
