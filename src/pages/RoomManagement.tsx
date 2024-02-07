@@ -8,18 +8,6 @@ import RoomCard from "../components/room-management/RoomCard";
 import AssignModal from "../components/room-management/AssignModal";
 import RemoveModal from "../components/room-management/RemoveModal";
 import { RoomSchema } from "../services/room-management/RoomServices";
-interface RoomList {
-    room_number: number;
-    headcount: number;
-    is_full: number;
-    room_fee: number;
-    room_status: "vacant" | "occupied";
-    room_type: "single room" | "double room";
-    occupant_count: number;
-}
-interface RoomData {
-    roomList: Array<RoomList>;
-}
 
 export default function RoomManagement() {
 
@@ -29,12 +17,15 @@ export default function RoomManagement() {
 
     const [selectedRoom, setSelectedRoom] = useState<RoomSchema | null>(null);
 
-    const [roomData, setRoomData] = useState<RoomData>({
-        roomList: [],
-    });
+
+    const [roomList, setRoomList] = useState<Array<RoomSchema>>([]);
 
     function updateSelectedRoom(room: RoomSchema) {
         setSelectedRoom(room);
+    }
+
+    function updateRoomList(room: Array<RoomSchema>) {
+        setRoomList(room);
     }
 
     useEffect(() => {
@@ -47,9 +38,7 @@ export default function RoomManagement() {
         Promise.all([
             roomList, roomList
         ]).then(([roomList]) => {
-            setRoomData({
-                roomList: roomList
-            });
+            setRoomList(roomList);
         }).catch((error) => {
             console.log(error);
         });
@@ -59,6 +48,7 @@ export default function RoomManagement() {
         <Grid padding={4} gap="2" h="90%" gridTemplateRows="1fr 3fr" gridTemplateColumns="1fr 4fr">
             <AssignModal
                 isOpen={isAssignOpen} onClose={onAssignClose}
+                room={selectedRoom} updateRoomList={updateRoomList}
             >
             </AssignModal>
             <RemoveModal
@@ -97,10 +87,10 @@ export default function RoomManagement() {
             <GridItem gridColumn="2/3" gridRow="1/3" display='flex' flexDirection='column'>
                 <Heading flexShrink="0" flexBasis='10%'>Room List</Heading>
                 <VStack overflow="auto" flexShrink='0' flexGrow='1' flexBasis='90%'>
-                    {(roomData.roomList.length < 1) ?
+                    {(roomList.length < 1) ?
                         <div>loading</div>
                         :
-                        roomData.roomList.map((e) => {
+                        roomList.map((e) => {
                             return (
                                 <RoomCard
                                     key={e.room_number} room={e}

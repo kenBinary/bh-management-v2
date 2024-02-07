@@ -38,7 +38,12 @@ export default function RoomCard({ room, openAssignModal, openRemoveModal, updat
                             ?
                             null
                             :
-                            <Button onClick={openAssignModal}>Asign Tenant</Button>
+                            <Button
+                                onClick={() => {
+                                    openAssignModal();
+                                    updateSelectedRoom(room);
+                                }}
+                            >Asign Tenant</Button>
                     }
                     <Button onClick={() => {
                         updateSelectedRoom(room);
