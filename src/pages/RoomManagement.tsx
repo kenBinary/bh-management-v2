@@ -53,7 +53,7 @@ export default function RoomManagement() {
             </AssignModal>
             <RemoveModal
                 isOpen={isRemoveOpen} onClose={onRemoveCLose}
-                room={selectedRoom}
+                room={selectedRoom} updateRoomList={updateRoomList}
             >
             </RemoveModal>
             <GridItem gridColumn="1/2">

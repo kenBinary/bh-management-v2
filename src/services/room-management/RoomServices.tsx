@@ -56,11 +56,37 @@ interface AssignTenantResponse {
     tenantList: Array<TenantSchema>;
     roomList: Array<RoomSchema>;
 }
+
 export async function assignTenant(roomNumber: number, tenantId: string, contractId: string): Promise<AssignTenantResponse | "fail"> {
     try {
         const url = `http://localhost:3000/room/${roomNumber}/assign-room/`;
         const response = await fetch(url, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                contractId: contractId,
+                tenantId: tenantId,
+            }),
+        });
+        if (!response.ok) {
+            throw new Error("fail");
+        }
+        const data = await response.json();
+        return data;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (error: any) {
+        return error.message;
+    }
+}
+
+export async function removeTenant(roomNumber: number, tenantId: string, contractId: string): Promise<AssignTenantResponse | "fail"> {
+    try {
+        const url = `http://localhost:3000/room/${roomNumber}/remove-room/`;
+        const response = await fetch(url, {
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
