@@ -1,11 +1,11 @@
 import {
     Grid, GridItem, Radio, RadioGroup,
     VStack, Text, Heading, HStack,
-    Button, Spacer,
+    Button, Spacer, useDisclosure
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import RoomCard from "../components/room-management/RoomCard";
-
+import AssignModal from "../components/room-management/AssignModal";
 interface RoomList {
     room_number: number;
     headcount: number;
@@ -19,6 +19,8 @@ interface RoomData {
 }
 
 export default function RoomManagement() {
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [roomData, setRoomData] = useState<RoomData>({
         roomList: [],
@@ -44,7 +46,10 @@ export default function RoomManagement() {
     }, []);
     return (
         <Grid padding={4} gap="2" h="90%" gridTemplateRows="1fr 3fr" gridTemplateColumns="1fr 4fr">
-
+            <AssignModal
+                isOpen={isOpen} onClose={onClose}
+            >
+            </AssignModal>
             <GridItem gridColumn="1/2">
                 <HStack align="center">
                     <Heading fontSize='2xl'>Filter</Heading>
@@ -82,7 +87,7 @@ export default function RoomManagement() {
                         roomData.roomList.map((e) => {
                             return (
                                 <RoomCard
-                                    key={e.room_number}
+                                    key={e.room_number} openModal={onOpen}
                                     roomNumber={e.room_number} roomFee={e.room_fee}
                                     roomStatus={e.room_status} roomType={e.room_type}
                                 ></RoomCard>

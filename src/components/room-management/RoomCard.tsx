@@ -7,8 +7,9 @@ interface CardProps {
     roomStatus: string;
     roomType: string;
     roomFee: number;
+    openModal: () => void;
 }
-export default function RoomCard({ roomNumber, roomStatus, roomType, roomFee }: CardProps) {
+export default function RoomCard({ roomNumber, roomStatus, roomType, roomFee, openModal }: CardProps) {
     return (
         <Card flexShrink='0' direction="row" size="sm" width="full" overflow="hidden" padding="2" variant="outline">
             <Image flexShrink="0" boxSize="230px" overflow="hidden" src='https://bit.ly/dan-abramov' alt='Dan Abramov' />
@@ -31,7 +32,7 @@ export default function RoomCard({ roomNumber, roomStatus, roomType, roomFee }: 
                     </Text>
                 </CardBody>
                 <CardFooter padding="2" gap="2" alignSelf="end">
-                    <Button>Asign Tenant</Button>
+                    <Button onClick={openModal}>Asign Tenant</Button>
                     <Button>Remove Tenant</Button>
                 </CardFooter>
             </VStack>
