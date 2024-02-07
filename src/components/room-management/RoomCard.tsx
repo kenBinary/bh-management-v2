@@ -8,8 +8,9 @@ interface CardProps {
     room: RoomSchema;
     openAssignModal: () => void;
     openRemoveModal: () => void;
+    updateSelectedRoom: (room: RoomSchema) => void;
 }
-export default function RoomCard({ room, openAssignModal, openRemoveModal }: CardProps) {
+export default function RoomCard({ room, openAssignModal, openRemoveModal, updateSelectedRoom }: CardProps) {
     return (
         <Card flexShrink='0' direction="row" size="sm" width="full" overflow="hidden" padding="2" variant="outline">
             <Image flexShrink="0" boxSize="230px" overflow="hidden" src='https://bit.ly/dan-abramov' alt='Dan Abramov' />
@@ -39,7 +40,10 @@ export default function RoomCard({ room, openAssignModal, openRemoveModal }: Car
                             :
                             <Button onClick={openAssignModal}>Asign Tenant</Button>
                     }
-                    <Button onClick={openRemoveModal}>Remove Tenant</Button>
+                    <Button onClick={() => {
+                        updateSelectedRoom(room);
+                        openRemoveModal();
+                    }}>Remove Tenant</Button>
                 </CardFooter>
             </VStack>
         </Card>

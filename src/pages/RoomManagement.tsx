@@ -6,6 +6,8 @@ import {
 import { useEffect, useState } from "react";
 import RoomCard from "../components/room-management/RoomCard";
 import AssignModal from "../components/room-management/AssignModal";
+import RemoveModal from "../components/room-management/RemoveModal";
+import { RoomSchema } from "../services/room-management/RoomServices";
 interface RoomList {
     room_number: number;
     headcount: number;
@@ -20,11 +22,19 @@ interface RoomData {
 
 export default function RoomManagement() {
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isAssignOpen, onOpen: onAssignOpen, onClose: onAssignClose } = useDisclosure();
+
+    const { isOpen: isRemoveOpen, onOpen: onRemoveOpen, onClose: onRemoveCLose } = useDisclosure();
+
+    const [selectedRoom, setSelectedRoom] = useState<RoomSchema | null>(null);
 
     const [roomData, setRoomData] = useState<RoomData>({
         roomList: [],
     });
+
+    function updateSelectedRoom(room: RoomSchema) {
+        setSelectedRoom(room);
+    }
 
     useEffect(() => {
         const roomList = fetch("http://localhost:3000/room", {
@@ -47,9 +57,14 @@ export default function RoomManagement() {
     return (
         <Grid padding={4} gap="2" h="90%" gridTemplateRows="1fr 3fr" gridTemplateColumns="1fr 4fr">
             <AssignModal
-                isOpen={isOpen} onClose={onClose}
+                isOpen={isAssignOpen} onClose={onAssignClose}
             >
             </AssignModal>
+            <RemoveModal
+                isOpen={isRemoveOpen} onClose={onRemoveCLose}
+                room={selectedRoom}
+            >
+            </RemoveModal>
             <GridItem gridColumn="1/2">
                 <HStack align="center">
                     <Heading fontSize='2xl'>Filter</Heading>
@@ -87,9 +102,9 @@ export default function RoomManagement() {
                         roomData.roomList.map((e) => {
                             return (
                                 <RoomCard
-                                    key={e.room_number} openModal={onOpen}
-                                    roomNumber={e.room_number} roomFee={e.room_fee}
-                                    roomStatus={e.room_status} roomType={e.room_type}
+                                    key={e.room_number} room={e}
+                                    openAssignModal={onAssignOpen} openRemoveModal={onRemoveOpen}
+                                    updateSelectedRoom={updateSelectedRoom}
                                 ></RoomCard>
                             );
                         })
