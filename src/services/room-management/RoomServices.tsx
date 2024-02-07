@@ -14,6 +14,7 @@ export interface RoomSchema {
     room_fee: number;
     room_type: string;
     room_status: string;
+    occupant_count: number;
 }
 
 export async function getTenants(): Promise<Array<TenantSchema> | "fail"> {

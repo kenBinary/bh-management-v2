@@ -15,6 +15,7 @@ interface RoomList {
     room_fee: number;
     room_status: "vacant" | "occupied";
     room_type: "single room" | "double room";
+    occupant_count: number;
 }
 interface RoomData {
     roomList: Array<RoomList>;
