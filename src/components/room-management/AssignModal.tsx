@@ -64,7 +64,7 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
 
     useEffect(() => {
         getTenants().then((response) => {
-            if (response !== "fail") {
+            if (response !== "fail" && response.length > 0) {
                 setTenantList(response);
                 setSelectedTenant({
                     tenant_id: response[0].tenant_id,
@@ -94,6 +94,22 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
                         }}
                     >
                         {
+                            (tenantList !== null && tenantList.length > 0)
+                                ?
+                                tenantList.map((e) => {
+                                    const fullName = e.first_name + e.last_name;
+                                    return (
+                                        <option
+                                            key={e.tenant_id} value={`${e.tenant_id} ${e.contract_id}`}
+                                        >
+                                            {fullName}
+                                        </option>
+                                    );
+                                })
+                                :
+                                null
+                        }
+                        {/* {
                             tenantList &&
                             tenantList.map((e) => {
                                 const fullName = e.first_name + e.last_name;
@@ -105,7 +121,7 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
                                     </option>
                                 );
                             })
-                        }
+                        } */}
                     </Select>
                 </ModalBody>
 
