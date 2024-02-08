@@ -11,6 +11,7 @@ const theme = extendTheme({
       primary: "#219C90",
       secondary: "#676B7C",
       accent: "#00FFF5",
+      accent2: "#10655D",
       text: "#EEEEEE",
     },
   },
