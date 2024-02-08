@@ -45,6 +45,9 @@ export default function RemoveModal({ isOpen, onClose, room, updateRoomList }: R
                         contract_id: response[0].contract_id,
                     });
                 }
+                if (response.length < 1) {
+                    setTenantList(null);
+                }
             });
         }
     }, [room]);
