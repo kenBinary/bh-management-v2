@@ -10,7 +10,7 @@ const theme = extendTheme({
       background: "#393E46",
       primary: "#219C90",
       secondary: "#676B7C",
-      accent: "#00ADB5",
+      accent: "#00FFF5",
       text: "#EEEEEE",
     },
   },
