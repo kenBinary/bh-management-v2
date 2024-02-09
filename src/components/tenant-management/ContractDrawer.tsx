@@ -5,11 +5,11 @@ import {
     Heading, Text, SimpleGrid,
     Flex, Tabs, TabList,
     TabPanels, Tab, TabPanel,
-    useToast
+    useToast, Spacer
 } from '@chakra-ui/react';
 
 import { TenantSchema, editContract, newContract } from '../../services/tenant-management/TenantServices';
-import DataTable from '../DataTable';
+import NecessityTable from './NecessityTable';
 import { Parties, GeneralTerms } from './ContractContent';
 
 import { ContractSchema } from '../../services/tenant-management/TenantServices';
@@ -26,11 +26,12 @@ interface Drawer {
 export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contract, updateContract }: Drawer) {
     const currentDate: string = new Date().toISOString().slice(0, 10);
     const toast = useToast();
+    const [inputNecessity, setInputNecessity] = useState<true | false>(false);
     const [nContract, setNContract] = useState<ContractSchema>({
         start_date: null,
         end_date: null,
     });
-    function handleAdd() {
+    function handleAddContract() {
         newContract(tenant.tenant_id, nContract.start_date, nContract.end_date).then((response) => {
             if (response === "success") {
                 toast({
@@ -51,7 +52,7 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
         });
         onClose();
     }
-    function handleEdit() {
+    function handleEditContract() {
         if (contract !== null) {
             editContract(tenant.tenant_id, contract).then((response) => {
                 if (response === "success") {
@@ -74,6 +75,9 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
         }
         onClose();
     }
+    function openInputNecessity(state: boolean) {
+        setInputNecessity(!state);
+    }
     return (
         <>
             <Drawer
@@ -86,15 +90,14 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                     <DrawerCloseButton />
                     <DrawerHeader>Contract Details</DrawerHeader>
 
-                    <DrawerBody overflowY="auto">
-                        <Tabs variant='soft-rounded' colorScheme='teal'>
+                    <DrawerBody >
+                        <Tabs variant='soft-rounded' colorScheme="teal" h="full" display="flex" flexDirection="column">
                             <TabList position="sticky">
                                 <Tab>Lease Details</Tab>
                                 <Tab>Necessity</Tab>
                                 <Tab>Signature</Tab>
                             </TabList>
-                            <TabPanels>
-
+                            <TabPanels overflowY="auto" >
                                 <TabPanel>
                                     <Parties
                                         fullName={`${tenant.first_name} ${tenant.last_name}`}
@@ -165,13 +168,9 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                     }
                                 </TabPanel>
 
-                                <TabPanel>
-                                    <Flex>
-                                        <Heading size="md">Necessities</Heading>
-                                        <Button size="xs" colorScheme="teal">Add</Button>
-                                    </Flex>
-                                    <DataTable></DataTable>
-                                </TabPanel>
+                                <AddNecessityPanel
+                                    inputNecessity={inputNecessity} openInputNecessity={openInputNecessity}
+                                ></AddNecessityPanel>
 
                                 <TabPanel>
                                     <Heading size="md">Signature</Heading>
@@ -196,13 +195,51 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                         </Button>
                         {
                             (contract) ?
-                                <Button colorScheme='teal' onClick={handleEdit}>Edit</Button>
+                                <Button colorScheme='teal' onClick={handleEditContract}>Edit</Button>
                                 :
-                                <Button colorScheme='teal' onClick={handleAdd}>Add</Button>
+                                <Button colorScheme='teal' onClick={handleAddContract}>Add</Button>
                         }
                     </DrawerFooter>
                 </DrawerContent>
             </Drawer >
         </>
+    );
+}
+
+interface AddNecessityPanel {
+    inputNecessity: boolean;
+    openInputNecessity: (state: boolean) => void;
+}
+function AddNecessityPanel({ inputNecessity, openInputNecessity }: AddNecessityPanel) {
+    return (
+        <TabPanel display="flex" flexDirection="column" gap="2">
+            <Flex >
+                <Heading size="md">Necessities</Heading>
+                <Spacer></Spacer>
+                {
+                    (inputNecessity)
+                        ?
+                        <Button
+                            size="xs" colorScheme="teal"
+                            onClick={() => {
+                                openInputNecessity(inputNecessity);
+                            }}
+                        >Confirm
+                        </Button>
+                        :
+                        <Button
+                            size="xs" colorScheme="teal"
+                            onClick={() => {
+                                openInputNecessity(inputNecessity);
+                            }}
+                        >Add
+                        </Button>
+                }
+            </Flex>
+            <NecessityTable
+                addNecessity={inputNecessity}
+            >
+            </NecessityTable>
+        </TabPanel>
     );
 }
