@@ -48,7 +48,6 @@ export default function TenantDetail({ selectedTenant, updateSelectedTenant }: T
                     </VStack>
                     <VStack align="start">
                         <Text>{occupancyStats}</Text>
-                        <Text>bababooey</Text>
                     </VStack>
                 </Flex>
             </VStack>
