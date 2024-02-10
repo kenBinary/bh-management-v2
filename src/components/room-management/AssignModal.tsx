@@ -32,22 +32,18 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
     function updateSelectedTenant(tenant: SelectedTenant) {
         setSelectedTenant(tenant);
     }
-    function updateTenantList(tenants: Array<TenantSchema>) {
-        setTenantList(tenants);
-    }
 
     function handleAssign(tenant: SelectedTenant, room: RoomSchema) {
         assignTenant(room.room_number, tenant.tenant_id, tenant.contract_id).then((response) => {
             if (response === "fail") {
                 toast({
                     description: "Failed to Assign Tenant ro Room",
-                    status: 'success',
+                    status: 'error',
                     duration: 5000,
                     isClosable: true,
                 });
             } else {
                 updateRoomList(response.roomList);
-                updateTenantList(response.tenantList);
                 updateSelectedTenant({
                     tenant_id: response.tenantList[0].tenant_id,
                     contract_id: response.tenantList[0].contract_id,
@@ -72,8 +68,7 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
                 });
             }
         });
-
-    }, []);
+    }, [room]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -109,19 +104,6 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
                                 :
                                 null
                         }
-                        {/* {
-                            tenantList &&
-                            tenantList.map((e) => {
-                                const fullName = e.first_name + e.last_name;
-                                return (
-                                    <option
-                                        key={e.tenant_id} value={`${e.tenant_id} ${e.contract_id}`}
-                                    >
-                                        {fullName}
-                                    </option>
-                                );
-                            })
-                        } */}
                     </Select>
                 </ModalBody>
 
