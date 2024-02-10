@@ -149,3 +149,43 @@ export async function editContract(tenantId: string, contract: ContractSchema): 
     }
     return "fail";
 }
+
+export interface NecessitySchema {
+    necessity_id?: string;
+    necessity_type: string;
+    necessity_fee: number;
+}
+interface AddNecessityReturn {
+    necessities: Array<NecessitySchema>;
+    message: string;
+}
+
+export async function addNecessity(contractId: string, necessityFee: number, necessityType: string): Promise<AddNecessityReturn | false> {
+    const url = `http://localhost:3000/contract/${contractId}/necessities`;
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            necessityType: necessityType,
+            necessityFee: necessityFee,
+        }),
+    });
+    if (!response.ok) {
+        return response.ok;
+    }
+    return response.json();
+}
+interface GetNecessity {
+    message: string;
+    data?: Array<NecessitySchema>;
+}
+export async function getNecessityList(contractId: string): Promise<GetNecessity> {
+    const url = `http://localhost:3000/contract/${contractId}/necessities`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    const data: GetNecessity = await response.json();
+    return data;
+}

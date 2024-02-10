@@ -8,12 +8,17 @@ import {
     useToast, Spacer
 } from '@chakra-ui/react';
 
-import { TenantSchema, editContract, newContract } from '../../services/tenant-management/TenantServices';
+import {
+    TenantSchema, editContract,
+    newContract, ContractSchema,
+    NecessitySchema,
+    getNecessityList,
+    addNecessity,
+} from '../../services/tenant-management/TenantServices';
 import NecessityTable from './NecessityTable';
 import { Parties, GeneralTerms } from './ContractContent';
 
-import { ContractSchema } from '../../services/tenant-management/TenantServices';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 interface Drawer {
     isOpen: boolean;
     onClose: () => void;
@@ -26,7 +31,6 @@ interface Drawer {
 export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contract, updateContract }: Drawer) {
     const currentDate: string = new Date().toISOString().slice(0, 10);
     const toast = useToast();
-    const [inputNecessity, setInputNecessity] = useState<true | false>(false);
     const [nContract, setNContract] = useState<ContractSchema>({
         start_date: null,
         end_date: null,
@@ -74,9 +78,6 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
             });
         }
         onClose();
-    }
-    function openInputNecessity(state: boolean) {
-        setInputNecessity(!state);
     }
     return (
         <>
@@ -168,9 +169,10 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                     }
                                 </TabPanel>
 
-                                <AddNecessityPanel
-                                    inputNecessity={inputNecessity} openInputNecessity={openInputNecessity}
-                                ></AddNecessityPanel>
+                                <NecessityPanel
+                                    contract={contract}
+                                >
+                                </NecessityPanel>
 
                                 <TabPanel>
                                     <Heading size="md">Signature</Heading>
@@ -206,11 +208,35 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
     );
 }
 
-interface AddNecessityPanel {
-    inputNecessity: boolean;
-    openInputNecessity: (state: boolean) => void;
+interface NecessityPanel {
+    contract: ContractSchema | null;
 }
-function AddNecessityPanel({ inputNecessity, openInputNecessity }: AddNecessityPanel) {
+function NecessityPanel({ contract }: NecessityPanel) {
+    const [inputNecessity, setInputNecessity] = useState<true | false>(false);
+    const [necessityList, setNecessityList] = useState<Array<NecessitySchema> | []>([]);
+    const [newNecessity, setNewNecessity] = useState<NecessitySchema>({
+        necessity_type: "",
+        necessity_fee: 0,
+    });
+
+    function openInputNecessity(state: boolean) {
+        setInputNecessity(!state);
+    }
+
+    function updateNewNecessity(newNecessity: NecessitySchema) {
+        setNewNecessity(newNecessity);
+    }
+
+    useEffect(() => {
+        if (contract !== null && contract.contract_id) {
+            getNecessityList(contract.contract_id).then((response) => {
+                if (response?.data) {
+                    setNecessityList(response.data);
+                }
+            });
+        }
+    }, [contract]);
+
     return (
         <TabPanel display="flex" flexDirection="column" gap="2">
             <Flex >
@@ -221,8 +247,18 @@ function AddNecessityPanel({ inputNecessity, openInputNecessity }: AddNecessityP
                         ?
                         <Button
                             size="xs" colorScheme="teal"
-                            onClick={() => {
+                            onClick={async () => {
                                 openInputNecessity(inputNecessity);
+                                if (contract?.contract_id) {
+                                    const response = await addNecessity(contract?.contract_id, Number(newNecessity.necessity_fee), newNecessity.necessity_type);
+                                    if (response) {
+                                        setNecessityList(response.necessities);
+                                    }
+                                }
+                                setNewNecessity({
+                                    necessity_type: "",
+                                    necessity_fee: 0,
+                                });
                             }}
                         >Confirm
                         </Button>
@@ -237,7 +273,9 @@ function AddNecessityPanel({ inputNecessity, openInputNecessity }: AddNecessityP
                 }
             </Flex>
             <NecessityTable
-                addNecessity={inputNecessity}
+                necessityList={necessityList}
+                addNecessity={inputNecessity} newNecessity={newNecessity}
+                updateNewNecessity={updateNewNecessity}
             >
             </NecessityTable>
         </TabPanel>
