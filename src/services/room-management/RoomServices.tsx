@@ -36,7 +36,7 @@ export async function getTenants(): Promise<Array<TenantSchema> | "fail"> {
 
 export async function getTenantsFromRoom(roomNumber: number): Promise<Array<TenantSchema> | "fail"> {
     try {
-        const url = `http://localhost:3000/room/${roomNumber}/tenant`;
+        const url = `http://localhost:3000/room/${roomNumber}/tenants`;
         const tenant = await fetch(url, {
             method: "GET"
         });
@@ -59,7 +59,7 @@ interface AssignTenantResponse {
 
 export async function assignTenant(roomNumber: number, tenantId: string, contractId: string): Promise<AssignTenantResponse | "fail"> {
     try {
-        const url = `http://localhost:3000/room/${roomNumber}/assign-room/`;
+        const url = `http://localhost:3000/room/${roomNumber}/tenants/`;
         const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -83,8 +83,9 @@ export async function assignTenant(roomNumber: number, tenantId: string, contrac
 }
 
 export async function removeTenant(roomNumber: number, tenantId: string, contractId: string): Promise<AssignTenantResponse | "fail"> {
+    // fix route to include tenantID as param and not body
     try {
-        const url = `http://localhost:3000/room/${roomNumber}/remove-room/`;
+        const url = `http://localhost:3000/room/${roomNumber}/tenants`;
         const response = await fetch(url, {
             method: "PUT",
             headers: {
