@@ -124,17 +124,30 @@ export default function RemoveModal({ isOpen, onClose, room, updateRoomList }: R
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button colorScheme='teal' mr={3} onClick={() => {
-                        if (selectedTenant !== null && room !== null) {
-                            handleRemove(selectedTenant, room);
-                        }
-                        onClose();
-                    }}>
-                        Remove
-                    </Button>
-                    <Button colorScheme='teal' variant='outline' onClick={() => {
-                        onClose();
-                    }}>
+                    {
+                        (tenantList)
+                            ?
+                            <Button
+                                colorScheme='teal' mr={3}
+                                onClick={() => {
+                                    if (selectedTenant !== null && room !== null) {
+                                        handleRemove(selectedTenant, room);
+                                    }
+                                    onClose();
+                                }}
+                            >
+                                Remove
+                            </Button>
+                            :
+                            null
+                    }
+
+                    <Button
+                        colorScheme='red' variant='outline'
+                        onClick={() => {
+                            onClose();
+                        }}
+                    >
                         close
                     </Button>
                 </ModalFooter>

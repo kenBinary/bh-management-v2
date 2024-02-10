@@ -108,17 +108,22 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button colorScheme='teal' mr={3} onClick={() => {
-                        if (selectedTenant !== null && room !== null) {
-                            handleAssign(selectedTenant, room);
-                        }
-                        onClose();
-                    }}>
+                    <Button
+                        colorScheme='teal' mr={3}
+                        onClick={() => {
+                            if (selectedTenant !== null && room !== null) {
+                                handleAssign(selectedTenant, room);
+                            }
+                            onClose();
+                        }}
+                    >
                         Assign
                     </Button>
-                    <Button colorScheme='teal' variant='outline' onClick={() => {
-                        onClose();
-                    }}>
+                    <Button colorScheme='red' variant='outline'
+                        onClick={() => {
+                            onClose();
+                        }}
+                    >
                         close
                     </Button>
                 </ModalFooter>
