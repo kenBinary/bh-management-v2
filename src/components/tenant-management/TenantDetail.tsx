@@ -6,7 +6,8 @@ import {
 import { FaPhoneAlt } from "react-icons/fa";
 import EditTenantModal from "./EditTenantModal";
 
-import { TenantSchema } from "../../services/tenant-management/TenantServices";
+import { TenantSchema, getTenantImage } from "../../services/tenant-management/TenantServices";
+import { useEffect, useState } from "react";
 
 interface TenantDetail {
     selectedTenant: TenantSchema;
@@ -20,6 +21,15 @@ export default function TenantDetail({ selectedTenant, updateSelectedTenant }: T
     const contactNumber = (selectedTenant.contact_number !== 0) ? selectedTenant.contact_number : "";
     const occupancyStats = (selectedTenant.occupancy_status !== 0) ? "Occupying a Room" : "Not Occupying a Room";
 
+    const [imageLink, setImageLink] = useState("");
+    useEffect(() => {
+        getTenantImage(selectedTenant.tenant_id).then((response) => {
+            if (response.imageLink) {
+                setImageLink(response.imageLink);
+            }
+        });
+    }, [selectedTenant]);
+
     return (
         <Flex as="section" padding="4" boxShadow="md">
             <EditTenantModal
@@ -29,7 +39,7 @@ export default function TenantDetail({ selectedTenant, updateSelectedTenant }: T
             <Image
                 borderRadius="full"
                 boxSize="180px"
-                src="https://bit.ly/dan-abramov"
+                src={imageLink}
                 alt="tenant image"
             ></Image>
             <VStack flex="1" padding="6">
@@ -43,8 +53,8 @@ export default function TenantDetail({ selectedTenant, updateSelectedTenant }: T
                 <Flex width="full" gap="4">
                     <FaPhoneAlt></FaPhoneAlt>
                     <VStack align="start">
-                        <Text>{contactNumber}</Text>
-                        <Text>JhonDoe@gmail.com</Text>
+                        <Text>(+63) {contactNumber}</Text>
+                        <Text>{(selectedTenant.email) ? selectedTenant.email : "-----"}</Text>
                     </VStack>
                     <VStack align="start">
                         <Text>{occupancyStats}</Text>

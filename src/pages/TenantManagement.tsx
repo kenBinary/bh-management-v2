@@ -68,6 +68,7 @@ export default function TenantManagement() {
                 isOpen={isOpen} onClose={onClose}
                 tenantList={tenantList} updateTenantList={updateTenantList}
             ></AddTenantModal>
+
             <Flex as="aside" flex="1 0 20%" direction="column">
                 <Flex paddingBottom="2" paddingTop="2" justifyContent="space-between">
                     <Heading size="md">Tenant List</Heading>
@@ -77,6 +78,7 @@ export default function TenantManagement() {
                     {
                         (tenantList.length < 1)
                             ?
+                            // TODO: add proper loading ui
                             <div>loading</div>
                             :
                             tenantList.map((e) => {

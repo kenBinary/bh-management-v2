@@ -3,7 +3,7 @@ export interface TenantDetails {
     last_name: string;
     contact_number: number;
     email?: string;
-    tenant_image: File | null;
+    tenant_image: File | null | string;
 }
 export interface TenantSchema extends TenantDetails {
     tenant_id: string;
@@ -190,4 +190,24 @@ export async function getNecessityList(contractId: string): Promise<GetNecessity
     });
     const data: GetNecessity = await response.json();
     return data;
+}
+
+interface GetTenantImage {
+    message?: string;
+    imageLink?: string;
+}
+export async function getTenantImage(tenantId: string): Promise<GetTenantImage> {
+    const url = `http://localhost:3000/tenant/${tenantId}/images`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        return {
+            imageLink: imageUrl,
+        };
+    } else {
+        return await response.json();
+    }
 }
