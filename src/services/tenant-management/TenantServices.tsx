@@ -61,19 +61,23 @@ export async function getTenant(tenantId: string): Promise<Array<TenantSchema> |
     }
 }
 
-export async function editTenant(tenantId: string, firstName: string, lastName: string, contactNumber: number): Promise<TenantSchema | "fail"> {
+export async function editTenant(
+    tenantId: string, firstName: string, lastName: string,
+    contactNumber: number, email: string, image: string | File,
+): Promise<TenantSchema | "fail"> {
+
+    const formData = new FormData();
+    formData.append("newFirstName", firstName);
+    formData.append("newLastName", lastName);
+    formData.append("newContactNum", contactNumber.toString());
+    formData.append("newEmail", email);
+    formData.append("newImage", image);
     const url = `http://localhost:3000/tenant/${tenantId}`;
+
     try {
         const response = await fetch(url, {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                newFirstName: firstName,
-                newLastName: lastName,
-                newContactNum: contactNumber,
-            })
+            body: formData,
         });
         if (!response.ok) {
             throw new Error("fail");

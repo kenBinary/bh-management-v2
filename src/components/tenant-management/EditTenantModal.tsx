@@ -6,7 +6,7 @@ import {
     FormLabel, useToast,
 } from '@chakra-ui/react';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { TenantSchema, editTenant } from '../../services/tenant-management/TenantServices';
 interface EditTenant {
     isOpen: boolean;
@@ -24,14 +24,21 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant, updat
     const firstNameRef = useRef<HTMLInputElement | null>(null);
     const lastNameRef = useRef<HTMLInputElement | null>(null);
     const contactRef = useRef<HTMLInputElement | null>(null);
+    const emailRef = useRef<HTMLInputElement | null>(null);
+    const [newFile, setNewFile] = useState<File | null | string>(null);
 
     async function handleEdit() {
         const firstNameInput = firstNameRef.current;
         const lastNameInput = lastNameRef.current;
         const contactInput = contactRef.current;
+        const emailInput = emailRef.current;
 
-        if (firstNameInput && lastNameInput && contactInput) {
-            const response = await editTenant(selectedTenant.tenant_id, firstNameInput.value, lastNameInput.value, Number(contactInput.value));
+        if (firstNameInput && lastNameInput && contactInput && emailInput && newFile) {
+            const response = await editTenant(
+                selectedTenant.tenant_id, firstNameInput.value,
+                lastNameInput.value, Number(contactInput.value),
+                emailInput.value, newFile,
+            );
             if (response === "fail") {
                 toast({
                     description: "Tenant Edit fail",
@@ -91,6 +98,27 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant, updat
                                     ref={contactRef}
                                 ></NumberInputField>
                             </NumberInput>
+                        </FormControl>
+
+                        <FormControl>
+                            <FormLabel>Email</FormLabel>
+                            <Input
+                                type="email" defaultValue={selectedTenant.email}
+                                ref={emailRef}
+                            />
+                        </FormControl>
+
+                        <FormControl isRequired>
+                            <FormLabel>ID picture</FormLabel>
+                            <input
+                                type='file' accept='image/png, image/jpeg, image/svg+xml'
+                                onChange={(e) => {
+                                    if (e.target.files) {
+                                        setNewFile(e.target.files[0]);
+                                    }
+                                }}
+                            >
+                            </input>
                         </FormControl>
 
                     </ModalBody>
