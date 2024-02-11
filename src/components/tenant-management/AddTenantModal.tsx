@@ -24,6 +24,8 @@ export default function AddTenantModal({ isOpen, onClose, updateTenantList, tena
         first_name: '',
         last_name: '',
         contact_number: 0,
+        email: "",
+        tenant_image: null,
     });
 
     return (
@@ -78,6 +80,36 @@ export default function AddTenantModal({ isOpen, onClose, updateTenantList, tena
                                     }}
                                 />
                             </NumberInput>
+                        </FormControl>
+
+                        <FormControl>
+                            <FormLabel>Email</FormLabel>
+                            <Input
+                                placeholder="e.g. jhondoe@gmail.com" type="email"
+                                value={tenantDetails.email}
+                                onChange={(e) => {
+                                    setTenantDetails({
+                                        ...tenantDetails,
+                                        email: e.target.value,
+                                    });
+                                }}
+                            />
+                        </FormControl>
+
+                        <FormControl isRequired>
+                            <FormLabel>ID picture</FormLabel>
+                            <input
+                                type='file' accept='image/png, image/jpeg, image/svg+xml'
+                                onChange={(e) => {
+                                    if (e.target.files) {
+                                        setTenantDetails({
+                                            ...tenantDetails,
+                                            tenant_image: e.target.files[0],
+                                        });
+                                    }
+                                }}
+                            >
+                            </input>
                         </FormControl>
 
                     </ModalBody>

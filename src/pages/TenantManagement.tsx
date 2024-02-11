@@ -26,6 +26,8 @@ export default function TenantManagement() {
         tenant_id: "",
         occupancy_status: 0,
         archive_stauts: 0,
+        email: "",
+        tenant_image: null,
     });
 
     function updateSelectedTenant(selectedTenant: TenantSchema) {

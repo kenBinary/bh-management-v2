@@ -2,6 +2,8 @@ export interface TenantDetails {
     first_name: string;
     last_name: string;
     contact_number: number;
+    email?: string;
+    tenant_image: File | null;
 }
 export interface TenantSchema extends TenantDetails {
     tenant_id: string;
@@ -19,16 +21,15 @@ interface AddTenantResponse extends PostFetch {
 
 export async function addTenant(tenantDetail: TenantDetails): Promise<"fail" | TenantSchema> {
     try {
+        const formData = new FormData();
+        formData.append("firstName", tenantDetail.first_name);
+        formData.append("lastName", tenantDetail.last_name);
+        formData.append("contactNum", tenantDetail.contact_number.toString());
+        formData.append("email", (tenantDetail.email) ? tenantDetail.email : "");
+        formData.append("tenantImage", (tenantDetail.tenant_image) ? tenantDetail.tenant_image : "");
         const response = await fetch("http://localhost:3000/tenant/", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                firstName: `${tenantDetail.first_name}`,
-                lastName: `${tenantDetail.last_name}`,
-                contactNum: `${tenantDetail.contact_number}`,
-            })
+            body: formData,
         });
         if (!response.ok) {
             throw new Error("fail");
@@ -41,6 +42,7 @@ export async function addTenant(tenantDetail: TenantDetails): Promise<"fail" | T
         return error.message;
     }
 }
+
 
 export async function getTenant(tenantId: string): Promise<Array<TenantSchema> | "fail"> {
     try {
