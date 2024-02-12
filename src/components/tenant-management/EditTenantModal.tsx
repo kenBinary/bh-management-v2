@@ -125,7 +125,7 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant, updat
 
                     <ModalFooter>
                         <Button
-                            colorScheme='green' mr={3}
+                            colorScheme='teal' mr={3}
                             onClick={handleEdit}
                         >
                             Edit

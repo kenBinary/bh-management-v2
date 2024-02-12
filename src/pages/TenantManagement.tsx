@@ -63,16 +63,19 @@ export default function TenantManagement() {
         });
     }, []);
     return (
-        <Flex height="90%" padding="4" gap="2" >
+        <Flex height="90%" padding="4" gap="2" bgColor="brandPallete.background">
             <AddTenantModal
                 isOpen={isOpen} onClose={onClose}
                 tenantList={tenantList} updateTenantList={updateTenantList}
             ></AddTenantModal>
 
-            <Flex as="aside" flex="1 0 20%" direction="column">
+            <Flex
+                as="aside" flex="1 0 20%" direction="column" bgColor="brandPallete.text"
+                padding="2" borderRadius="md"
+            >
                 <Flex paddingBottom="2" paddingTop="2" justifyContent="space-between">
-                    <Heading size="md">Tenant List</Heading>
-                    <Button size="sm" onClick={onOpen}>Add Tenant</Button>
+                    <Heading size="md" color="brandPallete.background">Tenant List</Heading>
+                    <Button size="sm" onClick={onOpen} colorScheme="teal">Add Tenant</Button>
                 </Flex>
                 <List spacing="0.5" flexGrow="1" overflowY="auto" >
                     {
@@ -85,7 +88,7 @@ export default function TenantManagement() {
                                 return (
                                     <TenantListItem
                                         tenant_id={e.tenant_id} name={`${e.first_name} ${e.last_name}`}
-                                        selectTenant={selectTenant}
+                                        selectTenant={selectTenant} key={e.tenant_id}
                                     />
                                 );
                             })
@@ -93,7 +96,10 @@ export default function TenantManagement() {
                 </List>
             </Flex>
 
-            <Flex flex="4 0 80%" as="main" direction="column" overflowY="auto">
+            <Flex
+                flex="4 0 80%" as="main" direction="column" overflowY="auto"
+                bgColor="brandPallete.text" borderRadius="md"
+            >
                 <TenantDetail
                     selectedTenant={selectedTenant} updateSelectedTenant={updateSelectedTenant}
                 ></TenantDetail>

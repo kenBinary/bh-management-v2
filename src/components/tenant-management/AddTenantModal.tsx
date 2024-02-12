@@ -115,7 +115,7 @@ export default function AddTenantModal({ isOpen, onClose, updateTenantList, tena
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme='green' mr={3} onClick={async () => {
+                        <Button colorScheme='teal' mr={3} onClick={async () => {
                             const response = await addTenant(tenantDetails);
                             if (response === "fail") {
                                 toast({

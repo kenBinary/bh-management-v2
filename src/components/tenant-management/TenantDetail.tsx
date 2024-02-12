@@ -44,20 +44,26 @@ export default function TenantDetail({ selectedTenant, updateSelectedTenant }: T
             ></Image>
             <VStack flex="1" padding="6">
                 <Flex width="full">
-                    <Text fontSize="3xl" fontWeight="semibold">
+                    <Text fontSize="4xl" fontWeight="semibold" color="brandPallete.background">
                         {fullName}
                     </Text>
                     <Spacer></Spacer>
-                    <Button onClick={onOpen}>Edit Tenant</Button>
+                    <Button onClick={onOpen} colorScheme="teal">Edit Tenant</Button>
                 </Flex>
                 <Flex width="full" gap="4">
-                    <FaPhoneAlt></FaPhoneAlt>
+                    <FaPhoneAlt size="25px" color="var(--chakra-colors-brandPallete-background)"></FaPhoneAlt>
                     <VStack align="start">
-                        <Text>(+63) {contactNumber}</Text>
-                        <Text>{(selectedTenant.email) ? selectedTenant.email : "-----"}</Text>
+                        <Text fontSize="lg">
+                            (+63) {contactNumber}
+                        </Text>
+                        <Text fontSize="lg">
+                            {(selectedTenant.email) ? selectedTenant.email : "-----"}
+                        </Text>
                     </VStack>
                     <VStack align="start">
-                        <Text>{occupancyStats}</Text>
+                        <Text fontSize="lg">
+                            {occupancyStats}
+                        </Text>
                     </VStack>
                 </Flex>
             </VStack>

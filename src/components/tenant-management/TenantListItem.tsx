@@ -17,9 +17,14 @@ export default function TenantListItem({ name, tenant_id, selectTenant }: ItemPr
     return (
         <ListItem
             cursor="pointer" border="2px solid"
-            borderColor="blue.100" fontSize="xl"
+            borderColor="brandPallete.secondary" fontSize="xl"
             padding="2" data-tenant_id={tenant_id}
-            onClick={handleClick}
+            onClick={handleClick} fontWeight="medium"
+            borderRadius="md" bgColor="brandPallete.secondary"
+            color="brandPallete.text" _hover={{
+                backgroundColor: "brandPallete.text",
+                color: "brandPallete.secondary"
+            }}
         >
             {name}
         </ListItem>

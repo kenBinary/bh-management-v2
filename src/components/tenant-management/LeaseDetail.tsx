@@ -76,10 +76,9 @@ export default function LeaseDetail({ selectedTenant }: LeaseDetail) {
                 contract={contract} updateContract={updateContract}
             ></ContractDrawer>
             <Flex flex="1 0" direction="column" gap="2">
-                <Heading size="xs" onClick={() => {
-                    console.log(collectionDetails);
-                    console.log(LeaseDetails);
-                }}>Current Lease</Heading>
+                <Heading size="xs" color="brandPallete.background">
+                    Current Lease
+                </Heading>
                 <Flex gap="8">
                     <Box flex="0 1 20%">
                         <Image
@@ -90,46 +89,56 @@ export default function LeaseDetail({ selectedTenant }: LeaseDetail) {
                         ></Image>
                     </Box>
                     <Flex direction="column" flex="0 1 20%">
-                        <Text>Room Number</Text>
-                        <Text>
+                        <Text color="brandPallete.background">
+                            Room Number
+                        </Text>
+                        <Text color="brandPallete.background">
                             {(LeaseDetails.room_number) ? LeaseDetails.room_number : "-----"}
                         </Text>
                     </Flex>
                     <Grid flex="1 1 25%" gridTemplateColumns="1fr 4fr" gridTemplateRows="1fr 1fr">
                         <Box gridRow="1/3" alignSelf="start">
-                            <LiaCoinsSolid size="100%"></LiaCoinsSolid>
+                            <LiaCoinsSolid size="100%" color="var(--chakra-colors-brandPallete-background)"></LiaCoinsSolid>
                         </Box>
-                        <Text gridColumn="2/3" gridRow="1/2">Monthly Rent</Text>
-                        <Text gridColumn="2/3" gridRow="2/3">
+                        <Text
+                            gridColumn="2/3" gridRow="1/2" alignSelf="end" color="brandPallete.background"
+                        >
+                            Monthly Rent
+                        </Text>
+                        <Text
+                            gridColumn="2/3" gridRow="2/3" alignSelf="start" color="brandPallete.background"
+                        >
                             {(LeaseDetails.total_bill) ? LeaseDetails.total_bill : "-----"}
                         </Text>
                     </Grid>
                 </Flex>
                 <Flex gap="8">
                     <Flex direction="column" flex="0 1 20%">
-                        <Text>Start</Text>
+                        <Text color="brandPallete.background">
+                            Start
+                        </Text>
                         {
                             (LeaseDetails.start_date) ?
-                                <Text>
+                                <Text color="brandPallete.background">
                                     {format(new Date(LeaseDetails.start_date), "MMM d, yyyy")}
                                 </Text>
                                 :
-                                <Text>-----</Text>
+                                <Text color="brandPallete.background">-----</Text>
                         }
                     </Flex>
                     <Flex direction="column" flex="0 1 20%">
-                        <Text>End</Text>
+                        <Text color="brandPallete.background">End</Text>
                         {
                             (LeaseDetails.end_date) ?
-                                <Text>
+                                <Text color="brandPallete.background">
                                     {format(new Date(LeaseDetails.end_date), "MMM d, yyyy")}
                                 </Text>
                                 :
-                                <Text>-----</Text>
+                                <Text color="brandPallete.background">-----</Text>
                         }
                     </Flex>
                     <Flex direction="column" flex="0 1 20%" justifyContent="center">
-                        <Text>Contract Details</Text>
+                        <Text color="brandPallete.background">Contract Details</Text>
                         <Button
                             size="md" onClick={onOpen}
                             ref={btnRef} colorScheme="teal"
@@ -138,30 +147,32 @@ export default function LeaseDetail({ selectedTenant }: LeaseDetail) {
                 </Flex>
             </Flex>
             <Flex flex="1 0" direction="column" gap="2">
-                <Heading size="xs">Collection</Heading>
+                <Heading size="xs" color="brandPallete.background">
+                    Collection
+                </Heading>
                 <Flex gap="4">
                     <LiaFileInvoiceDollarSolid size="40px"></LiaFileInvoiceDollarSolid>
 
                     <SimpleGrid flex="1" columns={2} rowGap="2">
                         <Box flex="1 0 50%">
-                            <Text>Current Invoices</Text>
-                            <Text>{collectionDetails.currentInvoices}</Text>
+                            <Text color="brandPallete.background">Current Invoices</Text>
+                            <Text color="brandPallete.background">{collectionDetails.currentInvoices}</Text>
                         </Box>
                         <Box flex="1 0 50%">
-                            <Text>Total Room Rent Collected</Text>
-                            <Text>{collectionDetails.totalRent}</Text>
+                            <Text color="brandPallete.background">Total Room Rent Collected</Text>
+                            <Text color="brandPallete.background">{collectionDetails.totalRent}</Text>
                         </Box>
                         <Box flex="1 0 50%">
-                            <Text>Past Due Invoices</Text>
-                            <Text>{collectionDetails.pastDueInvoices}</Text>
+                            <Text color="brandPallete.background">Past Due Invoices</Text>
+                            <Text color="brandPallete.background">{collectionDetails.pastDueInvoices}</Text>
                         </Box>
                         <Box flex="1 0 50%">
-                            <Text>Other Collected</Text>
-                            <Text>{collectionDetails.totalNecessity}</Text>
+                            <Text color="brandPallete.background">Other Collected</Text>
+                            <Text color="brandPallete.background">{collectionDetails.totalNecessity}</Text>
                         </Box>
                         <Box flex="1 0 50%" gridColumn="2/3">
-                            <Text>Total</Text>
-                            <Text>{collectionDetails.total}</Text>
+                            <Text color="brandPallete.background">Total</Text>
+                            <Text color="brandPallete.background">{collectionDetails.total}</Text>
                         </Box>
                     </SimpleGrid>
                 </Flex>
