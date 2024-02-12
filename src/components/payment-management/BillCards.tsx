@@ -3,11 +3,16 @@ import {
     Grid, Text, Button, Box,
     Flex,
 } from "@chakra-ui/react";
+import { format } from "date-fns";
+import { MdOutlineBedroomChild } from "react-icons/md";
 import {
-    MdOutlineBedroomChild
-} from "react-icons/md";
+    NecessityBill,
+} from "../../services/payment-management/paymentServices";
 
-export function NecessityBillCard() {
+interface NecessityBillCard {
+    bill: NecessityBill;
+}
+export function NecessityBillCard({ bill }: NecessityBillCard) {
     return (
         <Card
             direction="row" overflow='hidden' variant='outline'
@@ -24,7 +29,7 @@ export function NecessityBillCard() {
                             Total
                         </Text>
                         <Text>
-                            2500 php
+                            ₱ {bill.total_bill}
                         </Text>
                     </Flex>
                     <Flex flexDirection="column" >
@@ -32,7 +37,13 @@ export function NecessityBillCard() {
                             Payment Status
                         </Text>
                         <Text >
-                            all necessities paid
+                            {
+                                (bill.payment_status)
+                                    ?
+                                    "all necessities paid"
+                                    :
+                                    "some necessities not paid"
+                            }
                         </Text>
                     </Flex>
                     <Flex flexDirection="column" >
@@ -40,7 +51,7 @@ export function NecessityBillCard() {
                             Due Date
                         </Text>
                         <Text >
-                            Jan 13, 2025
+                            {format(new Date(bill.bill_due), "MMM d, yyyy")}
                         </Text>
                     </Flex>
                     <Flex flexDirection="column" >
@@ -48,7 +59,13 @@ export function NecessityBillCard() {
                             Date Paid
                         </Text>
                         <Text >
-                            Jan 14, 2025
+                            {
+                                (bill.date_paid)
+                                    ?
+                                    format(new Date(bill.date_paid), "MMM d, yyyy")
+                                    :
+                                    "-----"
+                            }
                         </Text>
                     </Flex>
                 </Grid>

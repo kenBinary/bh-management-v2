@@ -5,19 +5,31 @@ import {
 import { MdOutlineArrowDropDownCircle } from "react-icons/md";
 import { NecessityBillCard } from "../components/payment-management/BillCards";
 import DataTable from "../components/DataTable";
-import { AssignedTenants, getAssignedTenants } from "../services/payment-management/paymentServices";
+import {
+    AssignedTenant, NecessityBill, getAssignedTenants, getNecessityBills
+} from "../services/payment-management/paymentServices";
 import { useEffect, useState } from "react";
 
 export default function PaymentManagement() {
 
-    const [tenantList, setTenantList] = useState<Array<AssignedTenants> | null>(null);
+    const [tenantList, setTenantList] = useState<Array<AssignedTenant> | null>(null);
+    const [necessityBills, setNecessityBills] = useState<Array<NecessityBill> | null>(null);
+    const [selectedTenant, setSelectedTenant] = useState<AssignedTenant | null>(null);
 
     useEffect(() => {
         getAssignedTenants().then((response) => {
             if (response !== "fail" && response.assignedTenants.length > 0) {
                 setTenantList(response.assignedTenants);
+                const selectedTenant = response.assignedTenants[0];
+                setSelectedTenant(selectedTenant);
+                return getNecessityBills(selectedTenant.contract_id);
+            }
+        }).then((response) => {
+            if (response && response !== "fail" && response.data.length > 0) {
+                setNecessityBills(response.data);
             }
         });
+
     }, []);
 
     return (
@@ -43,7 +55,20 @@ export default function PaymentManagement() {
                     overflowY="scroll" justifyContent="space-evenly"
                     wrap="wrap" gap="2"
                 >
-                    <NecessityBillCard></NecessityBillCard>
+                    {
+                        (necessityBills)
+                            ?
+                            necessityBills.map((bill) => {
+                                return (
+                                    <NecessityBillCard
+                                        bill={bill}
+                                    >
+                                    </NecessityBillCard>
+                                );
+                            })
+                            :
+                            null
+                    }
                 </Flex>
             </Flex>
             <Box gridColumn="1/2" gridRow="2/3">

@@ -1,7 +1,7 @@
 interface Response {
     message?: string;
 }
-export interface AssignedTenants {
+export interface AssignedTenant {
     tenant_id: string;
     contract_id: string;
     first_name: string;
@@ -9,10 +9,34 @@ export interface AssignedTenants {
 }
 
 interface GetAssignedTenants extends Response {
-    assignedTenants: Array<AssignedTenants>;
+    assignedTenants: Array<AssignedTenant>;
 }
 export async function getAssignedTenants(): Promise<GetAssignedTenants | "fail"> {
     const url = "http://localhost:3000/tenant/assigned";
+    const response = await fetch(url, {
+        method: "GET",
+    });
+    if (response.ok) {
+        const json = await response.json();
+        return json;
+    } else {
+        return "fail";
+    }
+}
+
+export interface NecessityBill {
+    total_bill: number;
+    bill_due: string;
+    date_paid: null | string;
+    payment_status: number;
+}
+
+interface GetNecessityBills extends Response {
+    data: Array<NecessityBill>;
+}
+
+export async function getNecessityBills(contractId: string): Promise<GetNecessityBills | "fail"> {
+    const url = `http://localhost:3000/contract/${contractId}/necessity-bills`;
     const response = await fetch(url, {
         method: "GET",
     });
