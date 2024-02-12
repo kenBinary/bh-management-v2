@@ -47,3 +47,28 @@ export async function getNecessityBills(contractId: string): Promise<GetNecessit
         return "fail";
     }
 }
+
+export interface RoomUtilityBill {
+    room_number: number;
+    total_bill: number;
+    bill_due: string;
+    date_paid: null | string;
+    payment_status: number;
+}
+
+interface GetRoomUtilityBill extends Response {
+    data: Array<RoomUtilityBill>;
+}
+
+export async function getRoomUtilityBills(contractId: string): Promise<GetRoomUtilityBill | "fail"> {
+    const url = `http://localhost:3000/contract/${contractId}/room-utility-bills`;
+    const response = await fetch(url, {
+        method: "GET",
+    });
+    if (response.ok) {
+        const json = await response.json();
+        return json;
+    } else {
+        return "fail";
+    }
+}
