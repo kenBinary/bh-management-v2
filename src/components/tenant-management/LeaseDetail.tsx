@@ -1,69 +1,85 @@
 import {
     Flex, Heading, Text,
     Box, Image, Grid, Button,
-    useDisclosure,
+    useDisclosure, SimpleGrid
 
 } from "@chakra-ui/react";
 import { LiaCoinsSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { useRef, useEffect, useState } from "react";
 import { format } from "date-fns";
 import ContractDrawer from "./ContractDrawer";
-import { TenantSchema, ContractSchema, getContract } from "../../services/tenant-management/TenantServices";
+import {
+    TenantSchema, ContractSchema, getContract, getLeaseDetails, getCollectionDetails,
+    LeaseDetails, CollectionDetails,
+} from "../../services/tenant-management/TenantServices";
 interface LeaseDetail {
     selectedTenant: TenantSchema;
 }
-export default function LeaseDetail({ selectedTenant: tenantDetail }: LeaseDetail) {
+export default function LeaseDetail({ selectedTenant }: LeaseDetail) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const btnRef = useRef<null | HTMLButtonElement>(null);
 
+    const [LeaseDetails, setLeaseDetails] = useState<LeaseDetails>({
+        room_number: 0,
+        total_bill: 0,
+        start_date: "",
+        end_date: null,
+    });
+    const [collectionDetails, setCollectionDetails] = useState<CollectionDetails>({
+        currentInvoices: 0,
+        pastDueInvoices: 0,
+        totalRent: 0,
+        totalNecessity: 0,
+        total: 0,
+    });
+
     const [contract, setContract] = useState<ContractSchema | null>(null);
-    const tenantId = tenantDetail.tenant_id;
 
     function updateContract(contract: ContractSchema) {
         setContract(contract);
     }
 
-    // useEffect(() => {
-    //     getContract(tenantId).then((data) => {
-    //         if (data === "fail") {
-    //             setContract(null);
-    //         }
-    //         else {
-    //             setContract(data[0]);
-    //         }
-    //     });
-    //     // if (isOpen) {
-    //     //     getContract(tenantId).then((data) => {
-    //     //         if (data === "fail") {
-    //     //             setContract(null);
-    //     //         }
-    //     //         else {
-    //     //             setContract(data[0]);
-    //     //         }
-    //     //     });
-    //     // }
-    // }, [isOpen, tenantId]);
-
     useEffect(() => {
-        getContract(tenantId).then((data) => {
-            if (data === "fail") {
-                setContract(null);
-            }
-            else {
-                setContract(data[0]);
-            }
-        });
-    }, [tenantId]);
+        if (selectedTenant.tenant_id !== "") {
+            getContract(selectedTenant.tenant_id).then((data) => {
+                if (data === "fail") {
+                    setContract(null);
+                } else {
+                    setContract(data[0]);
+                }
+            });
+            getLeaseDetails(selectedTenant.tenant_id).then((response) => {
+                if (response !== "fail" && response.data.length > 0) {
+                    setLeaseDetails(response.data[0]);
+                } else {
+                    setLeaseDetails({
+                        room_number: 0,
+                        total_bill: 0,
+                        start_date: "",
+                        end_date: null,
+                    });
+                }
+            });
+            getCollectionDetails(selectedTenant.tenant_id).then((response) => {
+                if (response !== "fail") {
+                    setCollectionDetails(response.collectionDetails);
+                }
+            });
+        }
+    }, [selectedTenant.tenant_id]);
 
     return (
         <Flex as="section" padding="4" boxShadow="md">
             <ContractDrawer
                 isOpen={isOpen} onClose={onClose}
-                btnRef={btnRef} tenant={tenantDetail}
+                btnRef={btnRef} tenant={selectedTenant}
                 contract={contract} updateContract={updateContract}
             ></ContractDrawer>
             <Flex flex="1 0" direction="column" gap="2">
-                <Heading size="xs">Current Lease</Heading>
+                <Heading size="xs" onClick={() => {
+                    console.log(collectionDetails);
+                    console.log(LeaseDetails);
+                }}>Current Lease</Heading>
                 <Flex gap="8">
                     <Box flex="0 1 20%">
                         <Image
@@ -75,33 +91,41 @@ export default function LeaseDetail({ selectedTenant: tenantDetail }: LeaseDetai
                     </Box>
                     <Flex direction="column" flex="0 1 20%">
                         <Text>Room Number</Text>
-                        <Text>----</Text>
+                        <Text>
+                            {(LeaseDetails.room_number) ? LeaseDetails.room_number : "-----"}
+                        </Text>
                     </Flex>
                     <Grid flex="1 1 25%" gridTemplateColumns="1fr 4fr" gridTemplateRows="1fr 1fr">
                         <Box gridRow="1/3" alignSelf="start">
                             <LiaCoinsSolid size="100%"></LiaCoinsSolid>
                         </Box>
                         <Text gridColumn="2/3" gridRow="1/2">Monthly Rent</Text>
-                        <Text gridColumn="2/3" gridRow="2/3">----</Text>
+                        <Text gridColumn="2/3" gridRow="2/3">
+                            {(LeaseDetails.total_bill) ? LeaseDetails.total_bill : "-----"}
+                        </Text>
                     </Grid>
                 </Flex>
                 <Flex gap="8">
                     <Flex direction="column" flex="0 1 20%">
                         <Text>Start</Text>
                         {
-                            (contract) ?
-                                <Text>{contract.start_date}</Text>
+                            (LeaseDetails.start_date) ?
+                                <Text>
+                                    {format(new Date(LeaseDetails.start_date), "MMM d, yyyy")}
+                                </Text>
                                 :
-                                <Text>----</Text>
+                                <Text>-----</Text>
                         }
                     </Flex>
                     <Flex direction="column" flex="0 1 20%">
                         <Text>End</Text>
                         {
-                            (contract && contract.end_date !== null) ?
-                                <Text>{format(new Date(contract.end_date), "MMM d, yyyy")}</Text>
+                            (LeaseDetails.end_date) ?
+                                <Text>
+                                    {format(new Date(LeaseDetails.end_date), "MMM d, yyyy")}
+                                </Text>
                                 :
-                                <Text>----</Text>
+                                <Text>-----</Text>
                         }
                     </Flex>
                     <Flex direction="column" flex="0 1 20%" justifyContent="center">
@@ -117,30 +141,31 @@ export default function LeaseDetail({ selectedTenant: tenantDetail }: LeaseDetai
                 <Heading size="xs">Collection</Heading>
                 <Flex gap="4">
                     <LiaFileInvoiceDollarSolid size="40px"></LiaFileInvoiceDollarSolid>
-                    <Flex flex="1" flexWrap="wrap" rowGap="2">
+
+                    <SimpleGrid flex="1" columns={2} rowGap="2">
                         <Box flex="1 0 50%">
                             <Text>Current Invoices</Text>
-                            <Text>500</Text>
+                            <Text>{collectionDetails.currentInvoices}</Text>
                         </Box>
                         <Box flex="1 0 50%">
-                            <Text>Total Rent Collected</Text>
-                            <Text>600</Text>
+                            <Text>Total Room Rent Collected</Text>
+                            <Text>{collectionDetails.totalRent}</Text>
                         </Box>
                         <Box flex="1 0 50%">
                             <Text>Past Due Invoices</Text>
-                            <Text>2</Text>
+                            <Text>{collectionDetails.pastDueInvoices}</Text>
                         </Box>
                         <Box flex="1 0 50%">
                             <Text>Other Collected</Text>
-                            <Text>300</Text>
+                            <Text>{collectionDetails.totalNecessity}</Text>
                         </Box>
-                        <Box flex="1 0 50%">
+                        <Box flex="1 0 50%" gridColumn="2/3">
                             <Text>Total</Text>
-                            <Text>10000</Text>
+                            <Text>{collectionDetails.total}</Text>
                         </Box>
-                    </Flex>
+                    </SimpleGrid>
                 </Flex>
             </Flex>
-        </Flex>
+        </Flex >
     );
 }

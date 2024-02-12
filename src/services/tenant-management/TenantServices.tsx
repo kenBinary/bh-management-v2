@@ -215,3 +215,53 @@ export async function getTenantImage(tenantId: string): Promise<GetTenantImage> 
         return await response.json();
     }
 }
+
+export interface LeaseDetails {
+    room_number: number;
+    total_bill: number;
+    start_date: string;
+    end_date: string | null;
+}
+
+interface GetLeaseDetails {
+    message: string;
+    data: Array<LeaseDetails>;
+
+}
+
+export async function getLeaseDetails(tenantId: string): Promise<"fail" | GetLeaseDetails> {
+    const url = `http://localhost:3000/tenant/${tenantId}/lease-details`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const json = await response.json();
+        return json;
+    } else {
+        return "fail";
+    }
+}
+export interface CollectionDetails {
+    currentInvoices: number;
+    pastDueInvoices: number;
+    totalRent: number;
+    totalNecessity: number;
+    total: number;
+}
+
+interface GetCollectionDetails {
+    message: string;
+    collectionDetails: CollectionDetails;
+
+}
+export async function getCollectionDetails(tenantId: string): Promise<"fail" | GetCollectionDetails> {
+    const url = `http://localhost:3000/tenant/${tenantId}/collection-details`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const data = await response.json();
+        return data;
+    }
+    else return "fail";
+}
