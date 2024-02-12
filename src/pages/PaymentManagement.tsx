@@ -3,7 +3,7 @@ import {
     Flex, VStack, Heading
 } from "@chakra-ui/react";
 import { MdOutlineArrowDropDownCircle } from "react-icons/md";
-import BillCard from "../components/payment-management/BillCard";
+import { NecessityBillCard } from "../components/payment-management/BillCards";
 import DataTable from "../components/DataTable";
 import { AssignedTenants, getAssignedTenants } from "../services/payment-management/paymentServices";
 import { useEffect, useState } from "react";
@@ -43,15 +43,7 @@ export default function PaymentManagement() {
                     overflowY="scroll" justifyContent="space-evenly"
                     wrap="wrap" gap="2"
                 >
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
-                    <BillCard></BillCard>
+                    <NecessityBillCard></NecessityBillCard>
                 </Flex>
             </Flex>
             <Box gridColumn="1/2" gridRow="2/3">
