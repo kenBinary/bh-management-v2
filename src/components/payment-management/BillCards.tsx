@@ -9,10 +9,14 @@ import {
     NecessityBill, RoomUtilityBill,
 } from "../../services/payment-management/paymentServices";
 
-interface NecessityBillCard {
+interface BillCard {
+    updateSelectedBill: (bill: RoomUtilityBill | NecessityBill) => void;
+}
+
+interface NecessityBillCard extends BillCard {
     bill: NecessityBill;
 }
-export function NecessityBillCard({ bill }: NecessityBillCard) {
+export function NecessityBillCard({ bill, updateSelectedBill }: NecessityBillCard) {
     return (
         <Card
             direction="row" overflow='hidden' variant='outline'
@@ -69,7 +73,12 @@ export function NecessityBillCard({ bill }: NecessityBillCard) {
                         </Text>
                     </Flex>
                 </Grid>
-                <Button variant='solid' colorScheme='blue' alignSelf="end">
+                <Button
+                    variant='solid' colorScheme='blue' alignSelf="end"
+                    onClick={() => {
+                        updateSelectedBill(bill);
+                    }}
+                >
                     Pay
                 </Button>
             </CardBody>
@@ -77,10 +86,11 @@ export function NecessityBillCard({ bill }: NecessityBillCard) {
     );
 }
 
-interface RoomBillCard {
+interface RoomBillCard extends BillCard {
     bill: RoomUtilityBill;
+    onOpen: () => void;
 }
-export function RoomBillCard({ bill }: RoomBillCard) {
+export function RoomBillCard({ bill, updateSelectedBill, onOpen }: RoomBillCard) {
     return (
         <Card
             direction="row" overflow='hidden' variant='outline'
@@ -151,7 +161,13 @@ export function RoomBillCard({ bill }: RoomBillCard) {
                         </Text>
                     </Flex>
                 </Grid>
-                <Button variant='solid' colorScheme='blue' alignSelf="end">
+                <Button
+                    variant='solid' colorScheme='blue' alignSelf="end"
+                    onClick={() => {
+                        onOpen();
+                        updateSelectedBill(bill);
+                    }}
+                >
                     Pay
                 </Button>
             </CardBody>

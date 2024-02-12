@@ -1,22 +1,31 @@
 import {
     Grid, Box, Select,
-    Flex, VStack, Heading
+    Flex, VStack, Heading,
+    useDisclosure,
+
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+
 import { MdOutlineArrowDropDownCircle } from "react-icons/md";
 import { NecessityBillCard, RoomBillCard } from "../components/payment-management/BillCards";
 import DataTable from "../components/DataTable";
+import PayRoomModal from "../components/payment-management/PayRoomModal";
+
 import {
     AssignedTenant, NecessityBill, RoomUtilityBill, getAssignedTenants,
     getNecessityBills, getRoomUtilityBills
 } from "../services/payment-management/paymentServices";
-import { useEffect, useState } from "react";
+import { isRoomUtilityBill } from "../utils/typeGuards";
 
 export default function PaymentManagement() {
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [tenantList, setTenantList] = useState<Array<AssignedTenant> | null>(null);
     const [necessityBills, setNecessityBills] = useState<Array<NecessityBill> | null>(null);
     const [roomUtilityBills, setRoomUtilityBills] = useState<Array<RoomUtilityBill> | null>(null);
     const [selectedTenant, setSelectedTenant] = useState<AssignedTenant | null>(null);
+    const [selectedBill, setSelectedBIll] = useState<NecessityBill | RoomUtilityBill | null>(null);
 
     function updateSelectedTenant(tenant: AssignedTenant) {
         setSelectedTenant(tenant);
@@ -42,6 +51,10 @@ export default function PaymentManagement() {
         });
     }
 
+    function updateSelectedBIll(bill: RoomUtilityBill | NecessityBill) {
+        setSelectedBIll(bill);
+    }
+
     useEffect(() => {
         getAssignedTenants().then((response) => {
             if (response !== "fail" && response.assignedTenants.length > 0) {
@@ -63,6 +76,10 @@ export default function PaymentManagement() {
 
     return (
         <Grid h="90%" padding="4" as="section" gridTemplateColumns="5fr 2fr" gridTemplateRows="3fr 2fr" gap="2">
+            <PayRoomModal
+                isOpen={isOpen} onClose={onClose}
+                selectedBill={(selectedBill && isRoomUtilityBill(selectedBill)) ? selectedBill : null}
+            />
             <Flex boxShadow="md" gridColumn="1/2" gridRow="1/2" minHeight="0" direction="column">
                 <Select
                     width="30%" icon={<MdOutlineArrowDropDownCircle />}
@@ -100,7 +117,7 @@ export default function PaymentManagement() {
                             necessityBills.map((bill) => {
                                 return (
                                     <NecessityBillCard
-                                        bill={bill}
+                                        bill={bill} updateSelectedBill={updateSelectedBIll}
                                     >
                                     </NecessityBillCard>
                                 );
@@ -114,7 +131,9 @@ export default function PaymentManagement() {
                             roomUtilityBills.map((bill) => {
                                 return (
                                     <RoomBillCard
-                                        bill={bill}
+                                        key={bill.room_utility_bill_id}
+                                        updateSelectedBill={updateSelectedBIll}
+                                        bill={bill} onOpen={onOpen}
                                     >
                                     </RoomBillCard>
                                 );
