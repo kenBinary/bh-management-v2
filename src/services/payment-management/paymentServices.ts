@@ -29,6 +29,7 @@ export interface NecessityBill {
     bill_due: string;
     date_paid: null | string;
     payment_status: number;
+    necessity_bill_id: string;
 }
 
 interface GetNecessityBills extends Response {
