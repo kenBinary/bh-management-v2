@@ -2,11 +2,13 @@ import {
     Modal, ModalOverlay, ModalContent,
     ModalHeader, ModalFooter, ModalBody,
     ModalCloseButton, Button, Heading,
-    Checkbox, CheckboxGroup, Stack
+    Checkbox, CheckboxGroup, SimpleGrid
 } from '@chakra-ui/react';
 import {
     NecessityBill, AssignedTenant,
 } from '../../services/payment-management/paymentServices';
+import { useEffect, useState } from 'react';
+import { NecessitySchema, getNecessityList } from '../../services/tenant-management/TenantServices';
 
 interface PayNecessityModal {
     isOpen: boolean;
@@ -15,9 +17,26 @@ interface PayNecessityModal {
     selectedTenant: AssignedTenant | null;
 }
 
+
 export default function PayNecessityModal({
     isOpen, onClose, selectedBill, selectedTenant,
 }: PayNecessityModal) {
+
+    const [necessityList, setNecessityList] = useState<Array<NecessitySchema> | null>(null);
+    const [selectedNecessities, setSelectedNecessities] = useState<object>({});
+
+    useEffect(() => {
+        if (selectedTenant) {
+            getNecessityList(selectedTenant.contract_id).then((response) => {
+                if (response.data && response.data.length > 0) {
+                    setNecessityList(response.data);
+                } else {
+                    setNecessityList(null);
+                }
+            });
+        }
+    }, [selectedTenant]);
+
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -28,12 +47,32 @@ export default function PayNecessityModal({
 
                 <ModalBody>
                     <Heading size='md'>Confirm Payment?</Heading>
-                    <CheckboxGroup colorScheme='green' defaultValue={['naruto', 'kakashi']}>
-                        <Stack spacing={[1, 5]} direction={['column', 'row']}>
-                            <Checkbox value='naruto'>Naruto</Checkbox>
-                            <Checkbox value='sasuke'>Sasuke</Checkbox>
-                            <Checkbox value='kakashi'>Kakashi</Checkbox>
-                        </Stack>
+                    <CheckboxGroup colorScheme='teal'
+                    >
+                        <SimpleGrid columns={2}>
+                            {
+                                (necessityList && necessityList.length > 0)
+                                    ?
+                                    necessityList.map((necessity) => {
+                                        return (
+                                            <Checkbox
+                                                value={necessity.necessity_id}
+                                                onChange={(e) => {
+                                                    const { value, checked } = e.target;
+                                                    setSelectedNecessities({
+                                                        ...selectedNecessities,
+                                                        [value]: checked,
+                                                    });
+                                                }}
+                                            >
+                                                {necessity.necessity_type}
+                                            </Checkbox>
+                                        );
+                                    })
+                                    :
+                                    null
+                            }
+                        </SimpleGrid>
                     </CheckboxGroup>
                 </ModalBody>
 
@@ -41,8 +80,6 @@ export default function PayNecessityModal({
                     <Button
                         colorScheme='teal' mr={3}
                         onClick={() => {
-                            console.log(selectedTenant);
-                            console.log(selectedBill);
                             onClose();
                         }}
                     >
