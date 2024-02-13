@@ -73,3 +73,31 @@ export async function getRoomUtilityBills(contractId: string): Promise<GetRoomUt
         return "fail";
     }
 }
+
+interface PayRoomUtilityBills extends Response {
+    data: Array<RoomUtilityBill>;
+}
+
+export async function payRoomUtilityBills(
+    billId: string, roomNumber: number, previousDue: string,
+    contractId: string,
+): Promise<PayRoomUtilityBills | "fail"> {
+    const url = `http://localhost:3000/contract/${contractId}/room-utility-bills/${billId}`;
+    const payload = {
+        roomNumber: roomNumber,
+        previousDue: previousDue,
+    };
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    });
+    if (response.ok) {
+        const json = await response.json();
+        return json;
+    } else {
+        return "fail";
+    }
+}

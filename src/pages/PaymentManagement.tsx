@@ -31,24 +31,29 @@ export default function PaymentManagement() {
         setSelectedTenant(tenant);
     }
 
-    function updateNecessityBills(contractId: string) {
-        getNecessityBills(contractId).then((response) => {
+    function handleChangeTenant(tenant: AssignedTenant) {
+        updateSelectedTenant(tenant);
+        getRoomUtilityBills(tenant.contract_id).then((response) => {
             if (response !== "fail" && response.data.length > 0) {
-                setNecessityBills(response.data);
+                updateRoomUtilityBills(response.data);
             } else {
-                setNecessityBills(null);
+                updateRoomUtilityBills(null);
             }
         });
-    }
+        getNecessityBills(tenant.contract_id).then((response) => {
+            if (response !== "fail" && response.data.length > 0) {
+                updateNecessityBills(response.data);
+            } else {
+                updateNecessityBills(null);
+            }
+        });
 
-    function updateRoomUtilityBills(contractId: string) {
-        getRoomUtilityBills(contractId).then((response) => {
-            if (response !== "fail" && response.data.length > 0) {
-                setRoomUtilityBills(response.data);
-            } else {
-                setRoomUtilityBills(null);
-            }
-        });
+    }
+    function updateNecessityBills(necessityBills: Array<NecessityBill> | null) {
+        setNecessityBills(necessityBills);
+    }
+    function updateRoomUtilityBills(roomUtilityBills: Array<RoomUtilityBill> | null) {
+        setRoomUtilityBills(roomUtilityBills);
     }
 
     function updateSelectedBIll(bill: RoomUtilityBill | NecessityBill) {
@@ -79,15 +84,14 @@ export default function PaymentManagement() {
             <PayRoomModal
                 isOpen={isOpen} onClose={onClose}
                 selectedBill={(selectedBill && isRoomUtilityBill(selectedBill)) ? selectedBill : null}
+                selectedTenant={selectedTenant} updateRoomUtilityBills={updateRoomUtilityBills}
             />
             <Flex boxShadow="md" gridColumn="1/2" gridRow="1/2" minHeight="0" direction="column">
                 <Select
                     width="30%" icon={<MdOutlineArrowDropDownCircle />}
                     onChange={(e) => {
                         const tenant: AssignedTenant = JSON.parse(e.target.value);
-                        updateSelectedTenant(tenant);
-                        updateNecessityBills(tenant.contract_id);
-                        updateRoomUtilityBills(tenant.contract_id);
+                        handleChangeTenant(tenant);
                     }}
                 >
                     {
