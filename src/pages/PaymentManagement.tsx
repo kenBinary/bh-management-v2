@@ -10,16 +10,19 @@ import { MdOutlineArrowDropDownCircle } from "react-icons/md";
 import { NecessityBillCard, RoomBillCard } from "../components/payment-management/BillCards";
 import DataTable from "../components/DataTable";
 import PayRoomModal from "../components/payment-management/PayRoomModal";
-
+import PayNecessityModal from "../components/payment-management/PayNecessityModal";
 import {
     AssignedTenant, NecessityBill, RoomUtilityBill, getAssignedTenants,
     getNecessityBills, getRoomUtilityBills
 } from "../services/payment-management/paymentServices";
-import { isRoomUtilityBill } from "../utils/typeGuards";
+import {
+    isNecessityBill, isRoomUtilityBill,
+} from "../utils/typeGuards";
 
 export default function PaymentManagement() {
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isOpenPayRoom, onOpen: onOpenPayRoom, onClose: onClosePayRoom } = useDisclosure();
+    const { isOpen: isOpenPayNecessity, onOpen: onOpenPayNecessity, onClose: onClosePayNecessity } = useDisclosure();
 
     const [tenantList, setTenantList] = useState<Array<AssignedTenant> | null>(null);
     const [necessityBills, setNecessityBills] = useState<Array<NecessityBill> | null>(null);
@@ -82,9 +85,14 @@ export default function PaymentManagement() {
     return (
         <Grid h="90%" padding="4" as="section" gridTemplateColumns="5fr 2fr" gridTemplateRows="3fr 2fr" gap="2">
             <PayRoomModal
-                isOpen={isOpen} onClose={onClose}
+                isOpen={isOpenPayRoom} onClose={onClosePayRoom}
                 selectedBill={(selectedBill && isRoomUtilityBill(selectedBill)) ? selectedBill : null}
                 selectedTenant={selectedTenant} updateRoomUtilityBills={updateRoomUtilityBills}
+            />
+            <PayNecessityModal
+                isOpen={isOpenPayNecessity} onClose={onClosePayNecessity}
+                selectedBill={(selectedBill && isNecessityBill(selectedBill)) ? selectedBill : null}
+                selectedTenant={selectedTenant}
             />
             <Flex boxShadow="md" gridColumn="1/2" gridRow="1/2" minHeight="0" direction="column">
                 <Select
@@ -121,7 +129,9 @@ export default function PaymentManagement() {
                             necessityBills.map((bill) => {
                                 return (
                                     <NecessityBillCard
+                                        key={bill.necessity_bill_id}
                                         bill={bill} updateSelectedBill={updateSelectedBIll}
+                                        onOpen={onOpenPayNecessity}
                                     >
                                     </NecessityBillCard>
                                 );
@@ -137,7 +147,7 @@ export default function PaymentManagement() {
                                     <RoomBillCard
                                         key={bill.room_utility_bill_id}
                                         updateSelectedBill={updateSelectedBIll}
-                                        bill={bill} onOpen={onOpen}
+                                        bill={bill} onOpen={onOpenPayRoom}
                                     >
                                     </RoomBillCard>
                                 );

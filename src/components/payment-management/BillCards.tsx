@@ -15,8 +15,9 @@ interface BillCard {
 
 interface NecessityBillCard extends BillCard {
     bill: NecessityBill;
+    onOpen: () => void;
 }
-export function NecessityBillCard({ bill, updateSelectedBill }: NecessityBillCard) {
+export function NecessityBillCard({ bill, updateSelectedBill, onOpen }: NecessityBillCard) {
     return (
         <Card
             direction="row" overflow='hidden' variant='outline'
@@ -77,6 +78,7 @@ export function NecessityBillCard({ bill, updateSelectedBill }: NecessityBillCar
                     variant='solid' colorScheme='blue' alignSelf="end"
                     onClick={() => {
                         updateSelectedBill(bill);
+                        onOpen();
                     }}
                 >
                     Pay
