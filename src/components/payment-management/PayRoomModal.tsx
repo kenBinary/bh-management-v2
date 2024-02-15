@@ -27,11 +27,15 @@ export default function PayRoomModal({
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Pay Room</ModalHeader>
+                <ModalHeader fontSize="3xl" fontWeight="bold" color="brandPallete.background">
+                    Pay Room
+                </ModalHeader>
                 <ModalCloseButton />
 
                 <ModalBody>
-                    <Heading size='md'>Confirm Payment?</Heading>
+                    <Heading size='md' color="brandPallete.background">
+                        Confirm Payment?
+                    </Heading>
                 </ModalBody>
 
                 <ModalFooter>

@@ -44,12 +44,17 @@ export default function PayNecessityModal({
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Pay Necessities</ModalHeader>
+                <ModalHeader fontSize="3xl" fontWeight="bold" color="brandPallete.background">
+                    Pay Necessities
+                </ModalHeader>
                 <ModalCloseButton />
 
                 <ModalBody>
-                    <Heading size='md'>Confirm Payment?</Heading>
-                    <CheckboxGroup colorScheme='teal'
+                    <Heading size='md' color="brandPallete.background">
+                        Select Necessities to pay
+                    </Heading>
+                    <CheckboxGroup
+                        colorScheme='teal' size="lg"
                     >
                         <SimpleGrid columns={2}>
                             {
@@ -59,6 +64,7 @@ export default function PayNecessityModal({
                                         return (
                                             <Checkbox
                                                 value={necessity.necessity_id}
+                                                fontWeight="semibold" color="brandPallete.background"
                                                 onChange={(e) => {
                                                     const { value, checked } = e.target;
                                                     setSelectedNecessities({

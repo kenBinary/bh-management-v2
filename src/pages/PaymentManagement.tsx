@@ -83,7 +83,10 @@ export default function PaymentManagement() {
     }, []);
 
     return (
-        <Grid h="90%" padding="4" as="section" gridTemplateColumns="5fr 2fr" gridTemplateRows="3fr 2fr" gap="2">
+        <Grid
+            h="90%" padding="4" as="section" gridTemplateColumns="5fr 2fr" gridTemplateRows="1fr 1fr"
+            gap="2" bgColor="brandPallete.background"
+        >
             <PayRoomModal
                 isOpen={isOpenPayRoom} onClose={onClosePayRoom}
                 selectedBill={(selectedBill && isRoomUtilityBill(selectedBill)) ? selectedBill : null}
@@ -94,9 +97,13 @@ export default function PaymentManagement() {
                 selectedBill={(selectedBill && isNecessityBill(selectedBill)) ? selectedBill : null}
                 selectedTenant={selectedTenant} updateNecessityBills={updateNecessityBills}
             />
-            <Flex boxShadow="md" gridColumn="1/2" gridRow="1/2" minHeight="0" direction="column">
+            <Flex
+                boxShadow="md" gridColumn="1/2" gridRow="1/2" minHeight="0" direction="column"
+                borderRadius="md" bgColor="brandPallete.text" padding="2"
+            >
                 <Select
                     width="30%" icon={<MdOutlineArrowDropDownCircle />}
+                    borderColor="brandPallete.secondary" fontSize="lg" fontWeight="medium"
                     onChange={(e) => {
                         const tenant: AssignedTenant = JSON.parse(e.target.value);
                         handleChangeTenant(tenant);
@@ -157,13 +164,23 @@ export default function PaymentManagement() {
                     }
                 </Flex>
             </Flex>
-            <Box gridColumn="1/2" gridRow="2/3">
+            <Box
+                gridColumn="1/2" gridRow="2/3" bgColor="brandPallete.text"
+                borderRadius="md" padding="2"
+            >
                 <DataTable></DataTable>
             </Box>
-            <VStack gridColumn="2/3" gridRow="1/2" boxShadow="md">
+            <VStack
+                gridColumn="2/3" gridRow="1/2" boxShadow="md"
+                bgColor="brandPallete.text" borderRadius="md" padding="2"
+            >
                 <Heading size="md">Payment Status</Heading>
             </VStack>
-            <VStack gridColumn="2/3" gridRow="2/3" boxShadow="md">
+            <VStack
+                gridColumn="2/3" gridRow="2/3" boxShadow="md"
+                bgColor="brandPallete.text" borderRadius="md" padding="2"
+
+            >
                 <Heading size="md">Payment Categories</Heading>
             </VStack>
         </Grid >
