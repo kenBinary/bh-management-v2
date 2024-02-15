@@ -64,15 +64,15 @@ export default function TenantManagement() {
     }, []);
     return (
         <Flex height="90%" padding="4" gap="2" bgColor="brandPallete.background">
-            <AddTenantModal
-                isOpen={isOpen} onClose={onClose}
-                tenantList={tenantList} updateTenantList={updateTenantList}
-            ></AddTenantModal>
-
             <Flex
                 as="aside" flex="1 0 20%" direction="column" bgColor="brandPallete.text"
                 padding="2" borderRadius="md"
             >
+                <AddTenantModal
+                    isOpen={isOpen} onClose={onClose}
+                    tenantList={tenantList} updateTenantList={updateTenantList}
+                ></AddTenantModal>
+
                 <Flex paddingBottom="2" paddingTop="2" justifyContent="space-between">
                     <Heading size="md" color="brandPallete.background">Tenant List</Heading>
                     <Button size="sm" onClick={onOpen} colorScheme="teal">Add Tenant</Button>
