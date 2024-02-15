@@ -5,7 +5,7 @@ import {
     Checkbox, CheckboxGroup, SimpleGrid
 } from '@chakra-ui/react';
 import {
-    NecessityBill, AssignedTenant,
+    NecessityBill, AssignedTenant, payNecessityBill,
 } from '../../services/payment-management/paymentServices';
 import { useEffect, useState } from 'react';
 import { NecessitySchema, getNecessityList } from '../../services/tenant-management/TenantServices';
@@ -15,11 +15,13 @@ interface PayNecessityModal {
     onClose: () => void;
     selectedBill: NecessityBill | null;
     selectedTenant: AssignedTenant | null;
+    updateNecessityBills: (necessityBills: Array<NecessityBill> | null) => void;
 }
 
 
 export default function PayNecessityModal({
     isOpen, onClose, selectedBill, selectedTenant,
+    updateNecessityBills,
 }: PayNecessityModal) {
 
     const [necessityList, setNecessityList] = useState<Array<NecessitySchema> | null>(null);
@@ -80,6 +82,18 @@ export default function PayNecessityModal({
                     <Button
                         colorScheme='teal' mr={3}
                         onClick={() => {
+                            if (selectedBill && selectedTenant && selectedNecessities) {
+                                payNecessityBill(
+                                    selectedBill.necessity_bill_id, selectedTenant.contract_id,
+                                    selectedNecessities, selectedBill.bill_due
+                                ).then((response) => {
+                                    if (response !== "fail" && response.data.length > 0) {
+                                        updateNecessityBills(response.data);
+                                    } else {
+                                        updateNecessityBills(null);
+                                    }
+                                });
+                            }
                             onClose();
                         }}
                     >

@@ -102,3 +102,31 @@ export async function payRoomUtilityBills(
         return "fail";
     }
 }
+
+interface payNecessityBill extends Response {
+    data: Array<NecessityBill>;
+}
+
+export async function payNecessityBill(
+    billId: string, contractId: string,
+    paidNecessities: object, previousDue: string,
+): Promise<payNecessityBill | "fail"> {
+    const url = `http://localhost:3000/contract/${contractId}/necessity-bills/${billId}`;
+    const payload = {
+        previousDue: previousDue,
+        paidNecessities: paidNecessities,
+    };
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    });
+    if (response.ok) {
+        const json = await response.json();
+        return json;
+    } else {
+        return "fail";
+    }
+}

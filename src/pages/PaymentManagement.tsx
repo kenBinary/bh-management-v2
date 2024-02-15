@@ -92,7 +92,7 @@ export default function PaymentManagement() {
             <PayNecessityModal
                 isOpen={isOpenPayNecessity} onClose={onClosePayNecessity}
                 selectedBill={(selectedBill && isNecessityBill(selectedBill)) ? selectedBill : null}
-                selectedTenant={selectedTenant}
+                selectedTenant={selectedTenant} updateNecessityBills={updateNecessityBills}
             />
             <Flex boxShadow="md" gridColumn="1/2" gridRow="1/2" minHeight="0" direction="column">
                 <Select
