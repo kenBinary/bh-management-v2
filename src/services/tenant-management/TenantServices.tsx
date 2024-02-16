@@ -43,6 +43,18 @@ export async function addTenant(tenantDetail: TenantDetails): Promise<"fail" | T
     }
 }
 
+export async function getTenants(): Promise<Array<TenantSchema> | "fail"> {
+    const url = "http://localhost:3000/tenant/";
+    const response = await fetch(url, {
+        method: "GET",
+    });
+    if (response.ok) {
+        const json = await response.json();
+        return json;
+    } else {
+        return "fail";
+    }
+}
 
 export async function getTenant(tenantId: string): Promise<Array<TenantSchema> | "fail"> {
     try {

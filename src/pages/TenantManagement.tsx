@@ -10,7 +10,8 @@ import PaymentHistory from "../components/tenant-management/PaymentHistory";
 import TenantListItem from "../components/tenant-management/TenantListItem";
 import AddTenantModal from "../components/tenant-management/AddTenantModal";
 
-import { TenantSchema, getTenant } from "../services/tenant-management/TenantServices";
+
+import { TenantSchema, getTenant, getTenants } from "../services/tenant-management/TenantServices";
 
 
 export default function TenantManagement() {
@@ -48,20 +49,14 @@ export default function TenantManagement() {
     }
 
     useEffect(() => {
-        const tenantList = fetch("http://localhost:3000/tenant/", {
-            method: "GET"
-        }).then((response) => {
-            return response.json();
-        });
-        Promise.all([
-            tenantList,
-        ]).then(([tenantList]) => {
-            setSelectedTenant(tenantList[0]);
-            setTenantList(tenantList);
-        }).catch((error) => {
-            console.log(error);
+        getTenants().then((response) => {
+            if (response !== "fail" && response.length > 0) {
+                setSelectedTenant(response[0]);
+                setTenantList(response);
+            }
         });
     }, []);
+
     return (
         <Flex height="90%" padding="4" gap="2" bgColor="brandPallete.background">
             <Flex
@@ -81,8 +76,7 @@ export default function TenantManagement() {
                     {
                         (tenantList.length < 1)
                             ?
-                            // TODO: add proper loading ui
-                            <div>loading</div>
+                            null
                             :
                             tenantList.map((e) => {
                                 return (

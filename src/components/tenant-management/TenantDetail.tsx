@@ -5,6 +5,8 @@ import {
 } from "@chakra-ui/react";
 import { FaPhoneAlt } from "react-icons/fa";
 import EditTenantModal from "./EditTenantModal";
+import avatarPlaceholder from "/TenantManagement/avatarPlaceholder.png";
+
 
 import { TenantSchema, getTenantImage } from "../../services/tenant-management/TenantServices";
 import { useEffect, useState } from "react";
@@ -40,6 +42,7 @@ export default function TenantDetail({ selectedTenant, updateSelectedTenant }: T
                 borderRadius="full"
                 boxSize="180px"
                 src={imageLink}
+                fallbackSrc={avatarPlaceholder}
                 alt="tenant image"
             ></Image>
             <VStack flex="1" padding="6">
