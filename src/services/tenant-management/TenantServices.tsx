@@ -169,7 +169,7 @@ export async function editContract(tenantId: string, contract: ContractSchema): 
 }
 
 export interface NecessitySchema {
-    necessity_id?: string;
+    necessity_id: string;
     necessity_type: string;
     necessity_fee: number;
 }

@@ -7,28 +7,30 @@ import {
 import { useEffect, useState } from "react";
 
 import { MdOutlineArrowDropDownCircle } from "react-icons/md";
-import { NecessityBillCard, RoomBillCard } from "../components/payment-management/BillCards";
+import { RentBill } from "../components/payment-management/RentBill";
 import DataTable from "../components/DataTable";
-import PayRoomModal from "../components/payment-management/PayRoomModal";
-import PayNecessityModal from "../components/payment-management/PayNecessityModal";
 import {
     AssignedTenant, NecessityBill, RoomUtilityBill, getAssignedTenants,
     getNecessityBills, getRoomUtilityBills
 } from "../services/payment-management/paymentServices";
-import {
-    isNecessityBill, isRoomUtilityBill,
-} from "../utils/typeGuards";
+
+import { NecessitySchema, getNecessityList } from "../services/tenant-management/TenantServices";
+import PayBillModal from "../components/payment-management/PayBillModal";
+
+export interface SelectedBill {
+    necessityBill: NecessityBill | null;
+    roomUtilityBill: RoomUtilityBill;
+}
 
 export default function PaymentManagement() {
 
-    const { isOpen: isOpenPayRoom, onOpen: onOpenPayRoom, onClose: onClosePayRoom } = useDisclosure();
-    const { isOpen: isOpenPayNecessity, onOpen: onOpenPayNecessity, onClose: onClosePayNecessity } = useDisclosure();
+    const { isOpen: isOpenPayBill, onOpen: onOpenPayBill, onClose: onCLosePayBill } = useDisclosure();
 
     const [tenantList, setTenantList] = useState<Array<AssignedTenant> | null>(null);
     const [necessityBills, setNecessityBills] = useState<Array<NecessityBill> | null>(null);
     const [roomUtilityBills, setRoomUtilityBills] = useState<Array<RoomUtilityBill> | null>(null);
     const [selectedTenant, setSelectedTenant] = useState<AssignedTenant | null>(null);
-    const [selectedBill, setSelectedBIll] = useState<NecessityBill | RoomUtilityBill | null>(null);
+    const [selectedBill, setSelectedBIll] = useState<SelectedBill | null>(null);
 
     function updateSelectedTenant(tenant: AssignedTenant) {
         setSelectedTenant(tenant);
@@ -59,7 +61,7 @@ export default function PaymentManagement() {
         setRoomUtilityBills(roomUtilityBills);
     }
 
-    function updateSelectedBIll(bill: RoomUtilityBill | NecessityBill) {
+    function updateSelectedBIll(bill: SelectedBill) {
         setSelectedBIll(bill);
     }
 
@@ -82,21 +84,33 @@ export default function PaymentManagement() {
 
     }, []);
 
+    const [necessityList, setNecessityList] = useState<Array<NecessitySchema> | null>(null);
+    useEffect(() => {
+        if (selectedTenant) {
+            getNecessityList(selectedTenant.contract_id).then((response) => {
+                if (response.data && response.data.length > 0) {
+                    setNecessityList(response.data);
+                } else {
+                    setNecessityList(null);
+                }
+            });
+        }
+    }, [selectedTenant]);
+
+
     return (
         <Grid
             h="90%" padding="4" as="section" gridTemplateColumns="5fr 2fr" gridTemplateRows="1fr 1fr"
             gap="2" bgColor="brandPallete.background"
         >
-            <PayRoomModal
-                isOpen={isOpenPayRoom} onClose={onClosePayRoom}
-                selectedBill={(selectedBill && isRoomUtilityBill(selectedBill)) ? selectedBill : null}
-                selectedTenant={selectedTenant} updateRoomUtilityBills={updateRoomUtilityBills}
-            />
-            <PayNecessityModal
-                isOpen={isOpenPayNecessity} onClose={onClosePayNecessity}
-                selectedBill={(selectedBill && isNecessityBill(selectedBill)) ? selectedBill : null}
-                selectedTenant={selectedTenant} updateNecessityBills={updateNecessityBills}
-            />
+            <PayBillModal
+                isOpen={isOpenPayBill} onClose={onCLosePayBill}
+                selectedBill={selectedBill} necessityList={necessityList}
+                selectedTenant={selectedTenant}
+                updateRoomUtilityBills={updateRoomUtilityBills}
+                updateNecessityBills={updateNecessityBills}
+            >
+            </PayBillModal>
             <Flex
                 boxShadow="md" gridColumn="1/2" gridRow="1/2" minHeight="0" direction="column"
                 borderRadius="md" bgColor="brandPallete.text" padding="2"
@@ -127,36 +141,27 @@ export default function PaymentManagement() {
                 </Select>
                 <Flex
                     paddingBottom="2" paddingTop="2"
-                    overflowY="scroll" justifyContent="space-evenly"
+                    overflowY="auto" justifyContent="space-evenly"
                     wrap="wrap" gap="2"
                 >
                     {
-                        (necessityBills)
-                            ?
-                            necessityBills.map((bill) => {
-                                return (
-                                    <NecessityBillCard
-                                        key={bill.necessity_bill_id}
-                                        bill={bill} updateSelectedBill={updateSelectedBIll}
-                                        onOpen={onOpenPayNecessity}
-                                    >
-                                    </NecessityBillCard>
-                                );
-                            })
-                            :
-                            null
-                    }
-                    {
                         (roomUtilityBills)
                             ?
-                            roomUtilityBills.map((bill) => {
+                            roomUtilityBills.map((roomBill) => {
+                                let necessityBill: NecessityBill | null = null;
+                                if (necessityBills) {
+                                    necessityBill = necessityBills.filter((necessityBill) => {
+                                        return necessityBill.bill_due = roomBill.bill_due;
+                                    })[0];
+                                }
                                 return (
-                                    <RoomBillCard
-                                        key={bill.room_utility_bill_id}
+                                    <RentBill
+                                        key={roomBill.room_utility_bill_id}
+                                        onOpen={onOpenPayBill}
+                                        roomUtilityBill={roomBill} necessityBill={necessityBill}
+                                        necessityCount={(necessityList) ? necessityList.length : 0}
                                         updateSelectedBill={updateSelectedBIll}
-                                        bill={bill} onOpen={onOpenPayRoom}
-                                    >
-                                    </RoomBillCard>
+                                    />
                                 );
                             })
                             :
