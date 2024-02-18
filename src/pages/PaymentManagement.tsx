@@ -151,7 +151,7 @@ export default function PaymentManagement() {
                                 let necessityBill: NecessityBill | null = null;
                                 if (necessityBills) {
                                     necessityBill = necessityBills.filter((necessityBill) => {
-                                        return necessityBill.bill_due = roomBill.bill_due;
+                                        return necessityBill.bill_due === roomBill.bill_due;
                                     })[0];
                                 }
                                 return (
