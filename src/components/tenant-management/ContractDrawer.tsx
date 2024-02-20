@@ -178,54 +178,12 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                     contract={contract}
                                 >
                                 </NecessityPanel>
+
                                 <SignaturePanel
                                     currentDate={currentDate}
                                 >
                                 </SignaturePanel>
 
-                                {/* <TabPanel>
-                                    <Heading size="md">Signature</Heading>
-                                    <Text>
-                                        By signing below, both parties agree to the terms and conditions of
-                                        this Boarding House Rental Agreement.
-                                    </Text>
-                                    <SimpleGrid columns={2} gap="2">
-                                        <Flex gridColumn="1/2" gridRow="1/2" justifyContent="space-between">
-                                            <Text>
-                                                Landlord Signature Here:
-                                            </Text>
-                                            <Button size="xs" colorScheme='teal'>
-                                                clear
-                                            </Button>
-                                        </Flex>
-                                        <Box gridColumn="1/2">
-                                            <ReactSketchCanvas
-                                                width="100%"
-                                                height="130px"
-                                                canvasColor="var(--chakra-colors-brandPallete-text)"
-                                                strokeColor="var(--chakra-colors-brandPallete-background)"
-                                            />
-                                        </Box>
-                                        <Text>{currentDate}</Text>
-                                        <Flex gridColumn="2/3" gridRow="1/2" justifyContent="space-between">
-                                            <Text>
-                                                Tenant Signature Here:
-                                            </Text>
-                                            <Button size="xs" colorScheme='teal'>
-                                                clear
-                                            </Button>
-                                        </Flex>
-                                        <Box gridColumn="2/3" gridRow="2/3">
-                                            <ReactSketchCanvas
-                                                width="100%"
-                                                height="130px"
-                                                canvasColor="var(--chakra-colors-brandPallete-text)"
-                                                strokeColor="var(--chakra-colors-brandPallete-background)"
-                                            />
-                                        </Box>
-                                        <Text>{currentDate}</Text>
-                                    </SimpleGrid>
-                                </TabPanel> */}
                             </TabPanels>
                         </Tabs>
                     </DrawerBody>
