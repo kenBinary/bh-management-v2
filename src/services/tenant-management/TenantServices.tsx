@@ -277,3 +277,36 @@ export async function getCollectionDetails(tenantId: string): Promise<"fail" | G
     }
     else return "fail";
 }
+
+interface AddSignaturesReturn {
+    landlordSignature: string;
+    tenantSignature: string;
+}
+interface AddSignatures {
+    contractId: string;
+    dateSigned: string;
+    signatories: Array<string>;
+    tenantSignature: File | null | string | Blob;
+    landlordSignature: File | null | string | Blob;
+}
+
+export async function addSignatures(newSignature: AddSignatures): Promise<false | AddSignaturesReturn> {
+    try {
+        const url = `http://localhost:3000/contract/${newSignature.contractId}/signatures`;
+        const formData = new FormData();
+        formData.append("dateSigned", newSignature.dateSigned);
+        formData.append("signatories", JSON.stringify(newSignature.signatories));
+        formData.append("images", (newSignature.landlordSignature) ? newSignature.landlordSignature : "");
+        formData.append("images", (newSignature.tenantSignature) ? newSignature.tenantSignature : "");
+        const response = await fetch(url, {
+            method: "POST",
+            body: formData,
+        });
+        if (!response.ok) {
+            return response.ok;
+        }
+        return await response.json();
+    } catch (error) {
+        return false;
+    }
+}
