@@ -5,9 +5,8 @@ import {
     Heading, Text, SimpleGrid,
     Flex, Tabs, TabList,
     TabPanels, Tab, TabPanel,
-    useToast, Spacer, Box
+    useToast, Spacer,
 } from '@chakra-ui/react';
-import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
 
 import {
@@ -16,14 +15,16 @@ import {
     NecessitySchema,
     getNecessityList,
     addNecessity,
+    addSignatures,
 } from '../../services/tenant-management/TenantServices';
 import NecessityTable from './NecessityTable';
 import { Parties, GeneralTerms } from './ContractContent';
 
 import {
-    useState, useEffect, useRef
+    useState, useEffect,
 } from 'react';
-import { format } from 'date-fns';
+import { dataURLtoBlob } from '../../utils/conversions';
+import { SignaturePanel, SignatureUrls } from './SignaturePanel';
 interface Drawer {
     isOpen: boolean;
     onClose: () => void;
@@ -40,27 +41,97 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
         start_date: null,
         end_date: null,
     });
-    function handleAddContract() {
-        newContract(tenant.tenant_id, nContract.start_date, nContract.end_date).then((response) => {
-            if (response === "success") {
-                toast({
-                    description: "Contract Added",
-                    status: 'success',
-                    duration: 5000,
-                    isClosable: true,
-                });
-            }
-            else {
-                toast({
-                    description: "Failed to add contract",
-                    status: 'error',
-                    duration: 5000,
-                    isClosable: true,
-                });
-            }
+
+    const [necessityList, setNecessityList] = useState<Array<NecessitySchema> | []>([]);
+
+    function updateNecessityList(necessityList: Array<NecessitySchema> | []) {
+        setNecessityList(necessityList);
+    }
+
+    useEffect(() => {
+        if (contract !== null && contract.contract_id) {
+            getNecessityList(contract.contract_id).then((response) => {
+                if (response?.data) {
+                    setNecessityList(response.data);
+                }
+            });
+        } else {
+            setNecessityList([]);
+        }
+    }, [contract]);
+
+    const [signatures, setSignatures] = useState<SignatureUrls>({
+        tenantDataUrl: "",
+        landlordDataUrl: "",
+    });
+
+    function updateSignatures(newSignatures: SignatureUrls) {
+        setSignatures({
+            ...signatures,
+            ...newSignatures,
         });
+    }
+
+    function handleAddContract() {
+
+        const isSignatureEmpty = signatures.landlordDataUrl === "" && signatures.tenantDataUrl === "";
+
+        if (nContract.start_date && !isSignatureEmpty) {
+            newContract(tenant.tenant_id, nContract.start_date, nContract.end_date)
+                .then((response) => {
+                    if (response === "fail") {
+                        toast({
+                            description: "Failed to add contract",
+                            status: 'error',
+                            duration: 5000,
+                            isClosable: true,
+                        });
+                    }
+                    else {
+                        const newContract = response[0];
+                        updateContract(newContract);
+
+                        necessityList.forEach(async (necessity, index, Array) => {
+                            if (newContract !== null && newContract.contract_id) {
+                                const response = await addNecessity(newContract.contract_id, Number(necessity.necessity_fee), necessity.necessity_type);
+                                console.log(response);
+                                if (response && index === (Array.length - 1)) {
+                                    updateNecessityList(response.necessities);
+                                }
+                            }
+                        });
+
+                        if (signatures.tenantDataUrl && signatures.landlordDataUrl && newContract.contract_id) {
+                            const newSignature = {
+                                contractId: newContract.contract_id,
+                                dateSigned: currentDate,
+                                signatories: ["landlord", "tenant"],
+                                tenantSignature: dataURLtoBlob(signatures.tenantDataUrl),
+                                landlordSignature: dataURLtoBlob(signatures.landlordDataUrl),
+                            };
+                            addSignatures(newSignature);
+                        }
+
+                        toast({
+                            description: "Contract Added",
+                            status: 'success',
+                            duration: 5000,
+                            isClosable: true,
+                        });
+
+                    }
+                });
+        } else {
+            toast({
+                description: "Please enter some data for the contract",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
         onClose();
     }
+
     function handleEditContract() {
         if (contract !== null) {
             editContract(tenant.tenant_id, contract).then((response) => {
@@ -175,12 +246,14 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                 </TabPanel>
 
                                 <NecessityPanel
-                                    contract={contract}
+                                    contract={contract} necessityList={necessityList}
+                                    updateNecessityList={updateNecessityList}
                                 >
                                 </NecessityPanel>
 
                                 <SignaturePanel
                                     currentDate={currentDate}
+                                    updateSignatures={updateSignatures}
                                 >
                                 </SignaturePanel>
 
@@ -207,14 +280,30 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
 
 interface NecessityPanel {
     contract: ContractSchema | null;
+    necessityList: Array<NecessitySchema> | [];
+    updateNecessityList: (necessityList: Array<NecessitySchema> | []) => void;
 }
-function NecessityPanel({ contract }: NecessityPanel) {
+function NecessityPanel({ contract, necessityList, updateNecessityList }: NecessityPanel) {
     const [inputNecessity, setInputNecessity] = useState<true | false>(false);
-    const [necessityList, setNecessityList] = useState<Array<NecessitySchema> | []>([]);
     const [newNecessity, setNewNecessity] = useState<NecessitySchema>({
         necessity_type: "",
         necessity_fee: 0,
     });
+
+    async function handleConfirmNecessity(contract: ContractSchema | null) {
+        if (contract && contract.contract_id) {
+            const response = await addNecessity(contract.contract_id, Number(newNecessity.necessity_fee), newNecessity.necessity_type);
+            if (response) {
+                updateNecessityList(response.necessities);
+            }
+        } else {
+            updateNecessityList([...necessityList, newNecessity]);
+        }
+        setNewNecessity({
+            necessity_type: "",
+            necessity_fee: 0,
+        });
+    }
 
     function openInputNecessity(state: boolean) {
         setInputNecessity(!state);
@@ -224,15 +313,7 @@ function NecessityPanel({ contract }: NecessityPanel) {
         setNewNecessity(newNecessity);
     }
 
-    useEffect(() => {
-        if (contract !== null && contract.contract_id) {
-            getNecessityList(contract.contract_id).then((response) => {
-                if (response?.data) {
-                    setNecessityList(response.data);
-                }
-            });
-        }
-    }, [contract]);
+
 
     return (
         <TabPanel display="flex" flexDirection="column" gap="2">
@@ -244,18 +325,9 @@ function NecessityPanel({ contract }: NecessityPanel) {
                         ?
                         <Button
                             size="xs" colorScheme="teal"
-                            onClick={async () => {
+                            onClick={() => {
                                 openInputNecessity(inputNecessity);
-                                if (contract?.contract_id) {
-                                    const response = await addNecessity(contract?.contract_id, Number(newNecessity.necessity_fee), newNecessity.necessity_type);
-                                    if (response) {
-                                        setNecessityList(response.necessities);
-                                    }
-                                }
-                                setNewNecessity({
-                                    necessity_type: "",
-                                    necessity_fee: 0,
-                                });
+                                handleConfirmNecessity(contract);
                             }}
                         >Confirm
                         </Button>
@@ -275,89 +347,6 @@ function NecessityPanel({ contract }: NecessityPanel) {
                 updateNewNecessity={updateNewNecessity}
             >
             </NecessityTable>
-        </TabPanel>
-    );
-}
-
-interface SignaturePanel {
-    currentDate: string;
-}
-
-function SignaturePanel({ currentDate }: SignaturePanel) {
-
-    const tenantSignatureRef = useRef<ReactSketchCanvasRef>(null);
-    const landlordSignatureRef = useRef<ReactSketchCanvasRef>(null);
-
-    function handleTenSigClear() {
-        if (tenantSignatureRef && tenantSignatureRef.current) {
-            tenantSignatureRef.current.clearCanvas();
-        }
-    }
-    function handleLandSigClear() {
-        if (landlordSignatureRef && landlordSignatureRef.current) {
-            landlordSignatureRef.current.clearCanvas();
-        }
-    }
-
-    return (
-        <TabPanel display="flex" flexDirection="column" gap="2">
-            <Heading size="md">Signature</Heading>
-            <Text>
-                By signing below, both parties agree to the terms and conditions of
-                this Boarding House Rental Agreement.
-            </Text>
-            <SimpleGrid columns={2} gap="2">
-                <Flex gridColumn="1/2" gridRow="1/2" justifyContent="space-between">
-                    <Text>
-                        Landlord Signature Here:
-                    </Text>
-                    <Button
-                        size="xs" colorScheme='teal'
-                        onClick={() => {
-                            handleLandSigClear();
-                        }}
-                    >
-                        clear
-                    </Button>
-                </Flex>
-                <Box gridColumn="1/2">
-                    <ReactSketchCanvas
-                        ref={landlordSignatureRef}
-                        width="100%"
-                        height="130px"
-                        canvasColor="var(--chakra-colors-brandPallete-text)"
-                        strokeColor="var(--chakra-colors-brandPallete-background)"
-                    />
-                </Box>
-                <Text>
-                    {format(new Date(currentDate), "MMM d, yyyy")}
-                </Text>
-                <Flex gridColumn="2/3" gridRow="1/2" justifyContent="space-between">
-                    <Text>
-                        Tenant Signature Here:
-                    </Text>
-                    <Button
-                        size="xs" colorScheme='teal'
-                        onClick={() => {
-                            handleTenSigClear();
-                        }}
-                    >
-                        clear
-                    </Button>
-                </Flex>
-                <Box gridColumn="2/3" gridRow="2/3">
-                    <ReactSketchCanvas
-                        ref={tenantSignatureRef}
-                        width="100%"
-                        height="130px"
-                        canvasColor="var(--chakra-colors-brandPallete-text)"
-                        strokeColor="var(--chakra-colors-brandPallete-background)"
-                    />
-                </Box>
-                <Text>
-                    {format(new Date(currentDate), "MMM d, yyyy")}
-                </Text>
-            </SimpleGrid>
         </TabPanel>
     );
 }
