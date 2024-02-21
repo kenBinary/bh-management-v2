@@ -94,7 +94,6 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                         necessityList.forEach(async (necessity, index, Array) => {
                             if (newContract !== null && newContract.contract_id) {
                                 const response = await addNecessity(newContract.contract_id, Number(necessity.necessity_fee), necessity.necessity_type);
-                                console.log(response);
                                 if (response && index === (Array.length - 1)) {
                                     updateNecessityList(response.necessities);
                                 }
@@ -182,9 +181,7 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                     <SimpleGrid columns={4}>
                                         <Heading size="xs">Room Type</Heading>
                                         <Heading size="xs">Room Number</Heading>
-                                        <Heading size="xs" onClick={() => {
-                                            console.log(contract);
-                                        }}>Start Date</Heading>
+                                        <Heading size="xs">Start Date</Heading>
                                         <Heading size="xs">End Date</Heading>
                                         <Text>-----</Text>
                                         <Text>-----</Text>
@@ -254,6 +251,8 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                 <SignaturePanel
                                     currentDate={currentDate}
                                     updateSignatures={updateSignatures}
+                                    tenantId={tenant.tenant_id}
+                                    contractId={(contract && contract.contract_id) ? contract.contract_id : null}
                                 >
                                 </SignaturePanel>
 

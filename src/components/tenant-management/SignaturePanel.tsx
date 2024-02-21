@@ -1,25 +1,30 @@
 import {
     Button, Box, HStack,
     Heading, Text, SimpleGrid,
-    Flex,
+    Flex, Image,
     TabPanel,
 } from '@chakra-ui/react';
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
 import {
+    useEffect,
     useRef, useState
 } from 'react';
 import { format } from 'date-fns';
+import { SignatureEndpoints, getSignatures } from '../../services/tenant-management/TenantServices';
 export interface SignatureUrls {
     tenantDataUrl?: string;
     landlordDataUrl?: string;
 }
 interface SignaturePanel {
     currentDate: string;
+    tenantId: string;
+    contractId: string | null;
     updateSignatures: (signatures: SignatureUrls) => void;
 }
 export function SignaturePanel({
     currentDate, updateSignatures,
+    tenantId, contractId,
 }: SignaturePanel) {
     const tenantSignatureRef = useRef<ReactSketchCanvasRef>(null);
     const landlordSignatureRef = useRef<ReactSketchCanvasRef>(null);
@@ -47,6 +52,21 @@ export function SignaturePanel({
         });
     }
 
+    const [signatures, setSignatures] = useState<SignatureEndpoints | null>(null);
+
+    useEffect(() => {
+        if (contractId) {
+            getSignatures(tenantId, contractId).then((data) => {
+                if (data === "fail") {
+                    setSignatures(null);
+                } else {
+                    console.log(data);
+                    setSignatures(data);
+                }
+            });
+        }
+    }, [tenantId, contractId]);
+
     function confirmLandlordSignature() {
         setIsLandlordConfirmed(!isLandlordConfirmed);
         landlordSignatureRef.current?.exportImage("png").then((dataUrl) => {
@@ -69,38 +89,52 @@ export function SignaturePanel({
                         Landlord Signature Here:
                     </Text>
                     <HStack>
-                        <Button
-                            size="xs" colorScheme='teal'
-                            onClick={() => {
-                                confirmLandlordSignature();
-                            }}
-                        >
-                            {(isLandlordConfirmed) ? "Re-do" : "Confirm"}
-                        </Button>
-                        <Button
-                            size="xs" colorScheme='red'
-                            variant="outline"
-                            onClick={() => {
-                                if (!isLandlordConfirmed) {
-                                    clearLandlordSignature();
-                                }
-                            }}
-                        >
-                            clear
-                        </Button>
+                        {
+                            (signatures)
+                                ?
+                                null
+                                :
+                                <>
+                                    <Button
+                                        size="xs" colorScheme='teal'
+                                        onClick={() => {
+                                            confirmLandlordSignature();
+                                        }}
+                                    >
+                                        {(isLandlordConfirmed) ? "Re-do" : "Confirm"}
+                                    </Button>
+                                    <Button
+                                        size="xs" colorScheme='red'
+                                        variant="outline"
+                                        onClick={() => {
+                                            if (!isLandlordConfirmed) {
+                                                clearLandlordSignature();
+                                            }
+                                        }}
+                                    >
+                                        clear
+                                    </Button>
+                                </>
+                        }
                     </HStack>
                 </Flex>
                 <Box
-                    gridColumn="1/2" pointerEvents={`${(isLandlordConfirmed) ? "none" : "auto"}`}
+                    gridColumn="1/2" pointerEvents={`${(isLandlordConfirmed || signatures) ? "none" : "auto"}`}
                     border={`2px solid ${(isLandlordConfirmed) ? "green" : "red"}`} borderRadius="md"
                 >
-                    <ReactSketchCanvas
-                        ref={landlordSignatureRef}
-                        width="100%"
-                        height="130px"
-                        canvasColor="var(--chakra-colors-brandPallete-text)"
-                        strokeColor="var(--chakra-colors-brandPallete-background)"
-                    />
+                    {
+                        (signatures)
+                            ?
+                            <Image src={(signatures) ? signatures.landlord : ''}></Image>
+                            :
+                            <ReactSketchCanvas
+                                ref={landlordSignatureRef}
+                                width="100%"
+                                height="130px"
+                                canvasColor="#EEEEEE"
+                                strokeColor="#393E46"
+                            />
+                    }
                 </Box>
                 <Text>
                     {format(new Date(currentDate), "MMM d, yyyy")}
@@ -110,39 +144,53 @@ export function SignaturePanel({
                         Tenant Signature Here:
                     </Text>
                     <HStack>
-                        <Button
-                            size="xs" colorScheme='teal'
-                            onClick={() => {
-                                confirmTenantSignature();
-                            }}
-                        >
-                            {(isTenantConfirmed) ? "Re-do" : "Confirm"}
-                        </Button>
-                        <Button
-                            size="xs" colorScheme='red'
-                            variant="outline"
-                            onClick={() => {
-                                if (!isTenantConfirmed) {
-                                    clearTenantSignature();
-                                }
-                            }}
-                        >
-                            clear
-                        </Button>
+                        {
+                            (signatures)
+                                ?
+                                null
+                                :
+                                <>
+                                    <Button
+                                        size="xs" colorScheme='teal'
+                                        onClick={() => {
+                                            confirmTenantSignature();
+                                        }}
+                                    >
+                                        {(isTenantConfirmed) ? "Re-do" : "Confirm"}
+                                    </Button>
+                                    <Button
+                                        size="xs" colorScheme='red'
+                                        variant="outline"
+                                        onClick={() => {
+                                            if (!isTenantConfirmed) {
+                                                clearTenantSignature();
+                                            }
+                                        }}
+                                    >
+                                        clear
+                                    </Button>
+                                </>
+                        }
                     </HStack>
                 </Flex>
                 <Box
-                    pointerEvents={`${(isTenantConfirmed) ? "none" : "auto"}`}
+                    pointerEvents={`${(isTenantConfirmed || signatures) ? "none" : "auto"}`}
                     gridColumn="2/3" gridRow="2/3"
                     border={`2px solid ${(isTenantConfirmed) ? "green" : "red"}`} borderRadius="md"
                 >
-                    <ReactSketchCanvas
-                        ref={tenantSignatureRef}
-                        width="100%"
-                        height="130px"
-                        canvasColor="var(--chakra-colors-brandPallete-text)"
-                        strokeColor="var(--chakra-colors-brandPallete-background)"
-                    />
+                    {
+                        (signatures)
+                            ?
+                            <Image src={(signatures) ? `${signatures.tenant}` : ``}></Image>
+                            :
+                            <ReactSketchCanvas
+                                ref={tenantSignatureRef}
+                                width="100%"
+                                height="130px"
+                                canvasColor="#EEEEEE"
+                                strokeColor="#393E46"
+                            />
+                    }
                 </Box>
                 <Text>
                     {format(new Date(currentDate), "MMM d, yyyy")}

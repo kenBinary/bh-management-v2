@@ -312,3 +312,21 @@ export async function addSignatures(newSignature: AddSignatures): Promise<false 
         return false;
     }
 }
+
+export interface SignatureEndpoints {
+    landlord: string;
+    tenant: string;
+}
+
+export async function getSignatures(tenantId: string, contractId: string): Promise<SignatureEndpoints | "fail"> {
+    const url = `http://localhost:3000/tenant/${tenantId}/contracts/${contractId}/signatures`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const urls = await response.json();
+        return urls;
+    } else {
+        return "fail";
+    }
+}
