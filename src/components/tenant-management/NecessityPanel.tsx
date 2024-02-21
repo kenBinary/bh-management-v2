@@ -1,6 +1,6 @@
 import {
     Button, Heading, Flex,
-    TabPanel, Spacer,
+    TabPanel, Spacer, HStack
 } from '@chakra-ui/react';
 
 
@@ -19,6 +19,7 @@ interface NecessityPanel {
 }
 export function NecessityPanel({ contract, necessityList, updateNecessityList }: NecessityPanel) {
     const [inputNecessity, setInputNecessity] = useState<true | false>(false);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
     const [newNecessity, setNewNecessity] = useState<NecessitySchema>({
         necessity_type: "",
         necessity_fee: 0,
@@ -66,19 +67,30 @@ export function NecessityPanel({ contract, necessityList, updateNecessityList }:
                         >Confirm
                         </Button>
                         :
-                        <Button
-                            size="xs" colorScheme="teal"
-                            onClick={() => {
-                                openInputNecessity(inputNecessity);
-                            }}
-                        >Add
-                        </Button>
+                        <HStack>
+                            <Button
+                                size="xs" colorScheme="teal" variant="outline"
+                                onClick={() => {
+                                    openInputNecessity(inputNecessity);
+                                }}
+                            >Add
+                            </Button>
+                            <Button
+                                size="xs" colorScheme="red" variant="outline"
+                                onClick={() => {
+                                    setIsEditing(!isEditing);
+                                }}
+                            >
+                                Edit
+                            </Button>
+                        </HStack>
                 }
             </Flex>
             <NecessityTable
                 necessityList={necessityList}
                 addNecessity={inputNecessity} newNecessity={newNecessity}
-                updateNewNecessity={updateNewNecessity}
+                updateNewNecessity={updateNewNecessity} isEditing={isEditing}
+                updateNecessityList={updateNecessityList} contract={contract}
             >
             </NecessityTable>
         </TabPanel>

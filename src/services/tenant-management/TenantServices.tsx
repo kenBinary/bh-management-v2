@@ -330,3 +330,14 @@ export async function getSignatures(tenantId: string, contractId: string): Promi
         return "fail";
     }
 }
+
+export async function deleteNecessity(contractId: string, necessityId: string): Promise<Array<NecessitySchema> | false> {
+    const url = `http://localhost:3000/contract/${contractId}/necessities/${necessityId}`;
+    const response = await fetch(url, {
+        method: "DELETE",
+    });
+    if (response.ok) {
+        return response.json();
+    }
+    return response.ok;
+}

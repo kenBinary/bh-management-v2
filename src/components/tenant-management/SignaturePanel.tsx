@@ -60,7 +60,6 @@ export function SignaturePanel({
                 if (data === "fail") {
                     setSignatures(null);
                 } else {
-                    console.log(data);
                     setSignatures(data);
                 }
             });
