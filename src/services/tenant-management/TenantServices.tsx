@@ -127,7 +127,7 @@ export async function getContract(tenantId: string): Promise<Array<ContractSchem
     else return "fail";
 }
 
-export async function newContract(tenantId: string, startDate: string | null, endDate: string | null): Promise<"success" | "fail"> {
+export async function newContract(tenantId: string, startDate: string | null, endDate: string | null): Promise<Array<ContractSchema> | "fail"> {
     const url = "http://localhost:3000/contract/";
     if (!startDate) {
         return "fail";
@@ -144,9 +144,11 @@ export async function newContract(tenantId: string, startDate: string | null, en
         })
     });
     if (response.ok) {
-        return "success";
+        const json = await response.json();
+        return json;
+    } else {
+        return "fail";
     }
-    return "fail";
 }
 
 export async function editContract(tenantId: string, contract: ContractSchema): Promise<"fail" | "success"> {
