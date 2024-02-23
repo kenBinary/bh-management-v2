@@ -16,6 +16,7 @@ import {
 
 import { NecessitySchema, getNecessityList } from "../services/tenant-management/TenantServices";
 import PayBillModal from "../components/payment-management/PayBillModal";
+import { MyBarChart, MyPieChart } from "../components/charts";
 
 export interface SelectedBill {
     necessityBill: NecessityBill | null;
@@ -64,7 +65,11 @@ export default function PaymentManagement() {
     function updateSelectedBIll(bill: SelectedBill) {
         setSelectedBIll(bill);
     }
-
+    const mockData = [
+        { name: 'a', value: 5 },
+        { name: 'b', value: 10 },
+        { name: 'c', value: 15 },
+    ];
     useEffect(() => {
         getAssignedTenants().then((response) => {
             if (response !== "fail" && response.assignedTenants.length > 0) {
@@ -186,6 +191,10 @@ export default function PaymentManagement() {
                 bgColor="brandPallete.text" borderRadius="md" padding="2"
             >
                 <Heading size="md">Payment Status</Heading>
+                <MyPieChart
+                    data={mockData}
+                >
+                </MyPieChart>
             </VStack>
             <VStack
                 gridColumn="2/3" gridRow="2/3" boxShadow="md"
@@ -193,6 +202,10 @@ export default function PaymentManagement() {
 
             >
                 <Heading size="md">Payment Categories</Heading>
+                <MyBarChart
+                    data={mockData}
+                >
+                </MyBarChart>
             </VStack>
         </Grid >
     );

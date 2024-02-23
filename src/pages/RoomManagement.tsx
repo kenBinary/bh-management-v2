@@ -8,6 +8,7 @@ import RoomCard from "../components/room-management/RoomCard";
 import AssignModal from "../components/room-management/AssignModal";
 import RemoveModal from "../components/room-management/RemoveModal";
 import { RoomSchema } from "../services/room-management/RoomServices";
+import { MyPieChart } from "../components/charts";
 
 export default function RoomManagement() {
 
@@ -44,6 +45,13 @@ export default function RoomManagement() {
         });
 
     }, []);
+
+    const mockData = [
+        { name: 'a', value: 5 },
+        { name: 'b', value: 10 },
+        { name: 'c', value: 15 },
+    ];
+
     return (
         <Grid
             padding={4} gap="2" h="90%" gridTemplateRows="1fr 3fr" gridTemplateColumns="1fr 4fr"
@@ -89,8 +97,12 @@ export default function RoomManagement() {
             </GridItem>
 
             <GridItem gridColumn="1/2" bgColor="brandPallete.text" padding="3" borderRadius="md">
-                <VStack>
+                <VStack width="full" height="full">
                     <Heading fontSize="lg" color="brandPallete.background">Room Overview</Heading>
+                    <MyPieChart
+                        data={mockData}
+                    >
+                    </MyPieChart>
                 </VStack>
             </GridItem>
 
