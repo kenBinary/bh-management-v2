@@ -11,8 +11,11 @@
 - run `npm install` in terminal
 - run `npm run serverStart` in terminal
 - make .env file
+
 <img src="https://imgur.com/a/JNoqqFi" alt="env">
+
 - populate .env file with these values
+
 <img src="https://imgur.com/a/zCZeaER" alt="env">
 
 # Step 3
