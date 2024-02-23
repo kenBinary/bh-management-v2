@@ -171,9 +171,15 @@ export default function PaymentManagement() {
             </Flex>
             <Box
                 gridColumn="1/2" gridRow="2/3" bgColor="brandPallete.text"
-                borderRadius="md" padding="2"
+                borderRadius="md" padding="2" overflowY="scroll" display="flex"
+                flexDir="column" gap="2"
             >
-                <DataTable></DataTable>
+                <Heading size="md">
+                    Recent Payments
+                </Heading>
+                <Box>
+                    <DataTable></DataTable>
+                </Box>
             </Box>
             <VStack
                 gridColumn="2/3" gridRow="1/2" boxShadow="md"
