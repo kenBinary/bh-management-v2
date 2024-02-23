@@ -12,11 +12,11 @@
 - run `npm run serverStart` in terminal
 - make .env file
 
-<img src="https://imgur.com/a/JNoqqFi" alt="env">
+<img src="https://i.imgur.com/WtWXS51.png" alt="env">
 
 - populate .env file with these values
 
-<img src="https://imgur.com/a/zCZeaER" alt="env">
+<img src="https://i.imgur.com/vMNKOW6.png" alt="env">
 
 # Step 3
 ## Open frontend folder in vscode
