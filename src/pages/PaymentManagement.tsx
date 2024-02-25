@@ -10,8 +10,8 @@ import { MdOutlineArrowDropDownCircle } from "react-icons/md";
 import { RentBill } from "../components/payment-management/RentBill";
 import DataTable from "../components/DataTable";
 import {
-    AssignedTenant, NecessityBill, RoomUtilityBill, getAssignedTenants,
-    getNecessityBills, getRoomUtilityBills
+    AssignedTenant, NecessityBill, PaymentCategories, RoomUtilityBill, getAssignedTenants,
+    getNecessityBills, getPaymentCategories, getRoomUtilityBills
 } from "../services/payment-management/paymentServices";
 
 import { NecessitySchema, getNecessityList } from "../services/tenant-management/TenantServices";
@@ -32,6 +32,7 @@ export default function PaymentManagement() {
     const [roomUtilityBills, setRoomUtilityBills] = useState<Array<RoomUtilityBill> | null>(null);
     const [selectedTenant, setSelectedTenant] = useState<AssignedTenant | null>(null);
     const [selectedBill, setSelectedBIll] = useState<SelectedBill | null>(null);
+    const [paymentCategories, setPaymentCategories] = useState<Array<PaymentCategories>>([]);
 
     function updateSelectedTenant(tenant: AssignedTenant) {
         setSelectedTenant(tenant);
@@ -70,6 +71,7 @@ export default function PaymentManagement() {
         { name: 'b', value: 10 },
         { name: 'c', value: 15 },
     ];
+
     useEffect(() => {
         getAssignedTenants().then((response) => {
             if (response !== "fail" && response.assignedTenants.length > 0) {
@@ -84,6 +86,12 @@ export default function PaymentManagement() {
             }
             if (response && response[1] !== "fail" && response[1].data.length > 0) {
                 setRoomUtilityBills(response[1].data);
+            }
+        });
+
+        getPaymentCategories().then((data) => {
+            if (data !== "fail") {
+                setPaymentCategories(data);
             }
         });
 
@@ -176,14 +184,16 @@ export default function PaymentManagement() {
             </Flex>
             <Box
                 gridColumn="1/2" gridRow="2/3" bgColor="brandPallete.text"
-                borderRadius="md" padding="2" overflowY="scroll" display="flex"
+                borderRadius="md" padding="2" overflowY="auto" display="flex"
                 flexDir="column" gap="2"
             >
                 <Heading size="md">
                     Recent Payments
                 </Heading>
                 <Box>
-                    <DataTable></DataTable>
+                    <DataTable
+                        data={[]}
+                    />
                 </Box>
             </Box>
             <VStack
@@ -203,7 +213,7 @@ export default function PaymentManagement() {
             >
                 <Heading size="md">Payment Categories</Heading>
                 <MyBarChart
-                    data={mockData}
+                    data={paymentCategories}
                 >
                 </MyBarChart>
             </VStack>

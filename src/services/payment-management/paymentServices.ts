@@ -130,3 +130,21 @@ export async function payNecessityBill(
         return "fail";
     }
 }
+
+export interface PaymentCategories {
+    name: string;
+    value: number;
+}
+
+export async function getPaymentCategories(): Promise<Array<PaymentCategories> | "fail"> {
+    const url = `http://localhost:3000/analytics/payment-categories`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const data = await response.json();
+        return data;
+    } else {
+        return "fail";
+    }
+}
