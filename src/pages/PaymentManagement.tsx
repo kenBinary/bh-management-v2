@@ -10,8 +10,8 @@ import { MdOutlineArrowDropDownCircle } from "react-icons/md";
 import { RentBill } from "../components/payment-management/RentBill";
 import DataTable from "../components/DataTable";
 import {
-    AssignedTenant, NecessityBill, PaymentCategories, PaymentRatioStatus, RoomUtilityBill, getAssignedTenants,
-    getNecessityBills, getPaymentCategories, getPaymentRatioStatus, getRoomUtilityBills
+    AssignedTenant, NecessityBill, PaymentCategories, PaymentRatioStatus, RecentPayments, RoomUtilityBill, getAssignedTenants,
+    getNecessityBills, getPaymentCategories, getPaymentRatioStatus, getRecentPayments, getRoomUtilityBills
 } from "../services/payment-management/paymentServices";
 
 import { NecessitySchema, getNecessityList } from "../services/tenant-management/TenantServices";
@@ -34,6 +34,7 @@ export default function PaymentManagement() {
     const [selectedBill, setSelectedBIll] = useState<SelectedBill | null>(null);
     const [paymentCategories, setPaymentCategories] = useState<Array<PaymentCategories>>([]);
     const [paymentRatioStatus, setPaymentRatioStatus] = useState<Array<PaymentRatioStatus>>([]);
+    const [recentPayments, setRecentPayments] = useState<Array<RecentPayments>>([]);
 
     function updateSelectedTenant(tenant: AssignedTenant) {
         setSelectedTenant(tenant);
@@ -94,6 +95,12 @@ export default function PaymentManagement() {
         getPaymentRatioStatus().then((data) => {
             if (data !== "fail") {
                 setPaymentRatioStatus(data);
+            }
+        });
+
+        getRecentPayments().then((data) => {
+            if (data !== "fail") {
+                setRecentPayments(data);
             }
         });
 
@@ -194,7 +201,7 @@ export default function PaymentManagement() {
                 </Heading>
                 <Box>
                     <DataTable
-                        data={[]}
+                        data={recentPayments}
                     />
                 </Box>
             </Box>

@@ -166,3 +166,23 @@ export async function getPaymentRatioStatus(): Promise<Array<PaymentRatioStatus>
         return "fail";
     }
 }
+
+export interface RecentPayments {
+    "Bill Type": string;
+    "Full Name": string;
+    "Date Paid": string;
+    "Total Bill": number
+}
+
+export async function getRecentPayments(): Promise<Array<RecentPayments> | "fail"> {
+    const url = `http://localhost:3000/analytics/recent-payments`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const data = await response.json();
+        return data;
+    } else {
+        return "fail";
+    }
+}
