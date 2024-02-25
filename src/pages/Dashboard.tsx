@@ -5,38 +5,44 @@ import {
 import ReportCard from '../components/dashboard/ReportCard';
 import { FaRegMoneyBillAlt } from "react-icons/fa";
 import { MyLineChart, MyPieChart } from '../components/charts';
+import { useEffect, useState } from 'react';
+import { CardMetrics, RoomOverview, YearlyCashIn, getPropertyMetrics, getRoomOverview, getYearlyCashIn } from '../services/dashboardServices';
+import { format } from 'date-fns';
 
 export default function Dashboard() {
-    const data = [
-        {
-            "name": "Page A",
-            "uv": 4000,
-        },
-        {
-            "name": "Page B",
-            "uv": 3000,
-        },
-        {
-            "name": "Page C",
-            "uv": 2000,
-        },
-        {
-            "name": "Page D",
-            "uv": 2780,
-        },
-        {
-            "name": "Page E",
-            "uv": 1890,
-        },
-        {
-            "name": "Page F",
-            "uv": 2390,
-        },
-        {
-            "name": "Page G",
-            "uv": 3490,
-        }
-    ];
+
+    const [cardMetrics, setCardMetrics] = useState<CardMetrics>({
+        "monthlyCashIn": 0,
+        "totalTenants": 0,
+        "rentCollections": 0,
+        "vacantRooms": 0,
+    });
+
+    const [roomOverview, setRoomOverview] = useState<Array<RoomOverview>>([]);
+
+    const [yearlyCashIn, setYearlyCashIn] = useState<Array<YearlyCashIn>>([]);
+
+    useEffect(() => {
+        getPropertyMetrics().then((data) => {
+            if (data !== "fail") {
+                setCardMetrics(data);
+            }
+        });
+
+        getRoomOverview().then((data) => {
+            if (data !== "fail") {
+                setRoomOverview(data);
+            }
+        });
+
+        getYearlyCashIn().then((data) => {
+            if (data !== "fail") {
+                setYearlyCashIn(data);
+            }
+        });
+    }, []);
+
+
     return (
         <Flex
             as='main' padding={4} h="90%" direction="column" gap={2}
@@ -44,13 +50,13 @@ export default function Dashboard() {
         >
             <Flex as="header" justify="center" >
                 <Spacer></Spacer>
-                <ReportCard title="Monthly Cash-in" body="2533" icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
+                <ReportCard title={`${format(new Date(), "MMMM")} Cash-In`} body={`${cardMetrics.monthlyCashIn}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
                 <Spacer></Spacer>
-                <ReportCard title="Monthly Cash-in" body="2533" icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
+                <ReportCard title="Total Tenants" body={`${cardMetrics.totalTenants}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
                 <Spacer></Spacer>
-                <ReportCard title="Monthly Cash-in" body="2533" icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
+                <ReportCard title="Rent Collections" body={`${cardMetrics.rentCollections}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
                 <Spacer></Spacer>
-                <ReportCard title="Monthly Cash-in" body="2533" icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
+                <ReportCard title="Vacant Rooms" body={`${cardMetrics.vacantRooms}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
                 <Spacer></Spacer>
             </Flex>
             <Flex as="section" flex="1" gap="2">
@@ -59,10 +65,10 @@ export default function Dashboard() {
                     borderRadius="md" padding="4"
                 >
                     <Heading fontSize="2xl" color="brandPallete.background">
-                        Yearly Cash-In
+                        {`${format(new Date(), "yyyy")}  Yearly Cash-In`}
                     </Heading>
                     <MyLineChart
-                        data={data}
+                        data={yearlyCashIn}
                     >
                     </MyLineChart>
                 </VStack>
@@ -71,10 +77,10 @@ export default function Dashboard() {
                     borderRadius="md"
                 >
                     <Heading fontSize="2xl" color="brandPallete.background">
-                        Yearly Cash-In
+                        Room Overview
                     </Heading>
                     <MyPieChart
-                        data={data}
+                        data={roomOverview}
                     >
                     </MyPieChart>
 
