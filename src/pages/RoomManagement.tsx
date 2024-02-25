@@ -9,6 +9,7 @@ import AssignModal from "../components/room-management/AssignModal";
 import RemoveModal from "../components/room-management/RemoveModal";
 import { RoomSchema } from "../services/room-management/RoomServices";
 import { MyPieChart } from "../components/charts";
+import { RoomOverview, getRoomOverview } from "../services/dashboardServices";
 
 export default function RoomManagement() {
 
@@ -29,6 +30,8 @@ export default function RoomManagement() {
         setRoomList(room);
     }
 
+    const [roomOverview, setRoomOverview] = useState<Array<RoomOverview>>([]);
+
     useEffect(() => {
         const roomList = fetch("http://localhost:3000/room", {
             method: "GET"
@@ -44,13 +47,13 @@ export default function RoomManagement() {
             console.log(error);
         });
 
-    }, []);
+        getRoomOverview().then((data) => {
+            if (data !== "fail") {
+                setRoomOverview(data);
+            }
+        });
 
-    const mockData = [
-        { name: 'a', value: 5 },
-        { name: 'b', value: 10 },
-        { name: 'c', value: 15 },
-    ];
+    }, []);
 
     return (
         <Grid
@@ -100,7 +103,7 @@ export default function RoomManagement() {
                 <VStack width="full" height="full">
                     <Heading fontSize="lg" color="brandPallete.background">Room Overview</Heading>
                     <MyPieChart
-                        data={mockData}
+                        data={roomOverview}
                     >
                     </MyPieChart>
                 </VStack>
