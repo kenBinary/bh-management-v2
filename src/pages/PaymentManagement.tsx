@@ -10,8 +10,8 @@ import { MdOutlineArrowDropDownCircle } from "react-icons/md";
 import { RentBill } from "../components/payment-management/RentBill";
 import DataTable from "../components/DataTable";
 import {
-    AssignedTenant, NecessityBill, PaymentCategories, RoomUtilityBill, getAssignedTenants,
-    getNecessityBills, getPaymentCategories, getRoomUtilityBills
+    AssignedTenant, NecessityBill, PaymentCategories, PaymentRatioStatus, RoomUtilityBill, getAssignedTenants,
+    getNecessityBills, getPaymentCategories, getPaymentRatioStatus, getRoomUtilityBills
 } from "../services/payment-management/paymentServices";
 
 import { NecessitySchema, getNecessityList } from "../services/tenant-management/TenantServices";
@@ -33,6 +33,7 @@ export default function PaymentManagement() {
     const [selectedTenant, setSelectedTenant] = useState<AssignedTenant | null>(null);
     const [selectedBill, setSelectedBIll] = useState<SelectedBill | null>(null);
     const [paymentCategories, setPaymentCategories] = useState<Array<PaymentCategories>>([]);
+    const [paymentRatioStatus, setPaymentRatioStatus] = useState<Array<PaymentRatioStatus>>([]);
 
     function updateSelectedTenant(tenant: AssignedTenant) {
         setSelectedTenant(tenant);
@@ -66,11 +67,6 @@ export default function PaymentManagement() {
     function updateSelectedBIll(bill: SelectedBill) {
         setSelectedBIll(bill);
     }
-    const mockData = [
-        { name: 'a', value: 5 },
-        { name: 'b', value: 10 },
-        { name: 'c', value: 15 },
-    ];
 
     useEffect(() => {
         getAssignedTenants().then((response) => {
@@ -92,6 +88,12 @@ export default function PaymentManagement() {
         getPaymentCategories().then((data) => {
             if (data !== "fail") {
                 setPaymentCategories(data);
+            }
+        });
+
+        getPaymentRatioStatus().then((data) => {
+            if (data !== "fail") {
+                setPaymentRatioStatus(data);
             }
         });
 
@@ -202,7 +204,7 @@ export default function PaymentManagement() {
             >
                 <Heading size="md">Payment Status</Heading>
                 <MyPieChart
-                    data={mockData}
+                    data={paymentRatioStatus}
                 >
                 </MyPieChart>
             </VStack>

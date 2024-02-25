@@ -148,3 +148,21 @@ export async function getPaymentCategories(): Promise<Array<PaymentCategories> |
         return "fail";
     }
 }
+
+export interface PaymentRatioStatus {
+    name: string;
+    value: number;
+}
+
+export async function getPaymentRatioStatus(): Promise<Array<PaymentRatioStatus> | "fail"> {
+    const url = `http://localhost:3000/analytics/payment-ratio-status`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const data = await response.json();
+        return data;
+    } else {
+        return "fail";
+    }
+}
