@@ -55,7 +55,9 @@ export default function PayBillModal({
         if (necessityList) {
             const selectedNecessities: SelectedNecessities = {};
             necessityList.forEach((necessity) => {
-                selectedNecessities[necessity.necessity_id] = true;
+                if (necessity.necessity_id) {
+                    selectedNecessities[necessity.necessity_id] = true;
+                }
             });
             setSelectedNecessities(selectedNecessities);
         }
@@ -114,7 +116,7 @@ export default function PayBillModal({
                                                 <Tr _hover={strikeThrough} cursor="pointer"
                                                     data-Value={necessityId}
                                                     textDecoration={
-                                                        (necessityId in selectedNecessities && selectedNecessities[necessityId])
+                                                        (necessityId && necessityId in selectedNecessities && selectedNecessities[necessityId])
                                                             ?
                                                             undefined
                                                             :
