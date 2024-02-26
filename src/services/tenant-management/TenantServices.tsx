@@ -341,3 +341,23 @@ export async function deleteNecessity(contractId: string, necessityId: string): 
     }
     return response.ok;
 }
+
+export interface PaymentHistorySchema {
+    "Full Name": string;
+    "Date Paid": string;
+    "Bill Due": string;
+    "Total Bill": number;
+}
+
+export async function getPaymentHistory(tenantId: string): Promise<Array<PaymentHistorySchema> | "fail"> {
+    const url = `http://localhost:3000/tenant/${tenantId}/payment-history`;
+    const response = await fetch(url, {
+        method: "GET"
+    });
+    if (response.ok) {
+        const data = await response.json();
+        return data;
+    } else {
+        return "fail";
+    }
+}

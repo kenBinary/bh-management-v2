@@ -100,7 +100,9 @@ export default function TenantManagement() {
                 <LeaseDetail
                     selectedTenant={selectedTenant}
                 ></LeaseDetail>
-                <PaymentHistory></PaymentHistory>
+                <PaymentHistory
+                    tenantId={selectedTenant.tenant_id}
+                ></PaymentHistory>
             </Flex>
         </Flex >
     );
