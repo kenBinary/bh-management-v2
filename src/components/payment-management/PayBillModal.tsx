@@ -11,7 +11,7 @@ import {
     AssignedTenant, payRoomUtilityBills, payNecessityBill, RoomUtilityBill,
     NecessityBill,
 } from '../../services/payment-management/paymentServices';
-import { format } from "date-fns";
+import { differenceInMonths, format } from "date-fns";
 
 import { useEffect, useState } from 'react';
 interface PayBillModal {
@@ -42,6 +42,21 @@ export default function PayBillModal({
         setSelectedNecessities(selectedNecessities);
     }
 
+
+    let hasInterest: null | boolean = null;
+
+    if (selectedBill) {
+        const currentDate = format(new Date(), "yyyy-MM-dd");
+        const roomDue = selectedBill.roomUtilityBill.bill_due;
+        const monthDifference = differenceInMonths(
+            new Date(currentDate),
+            new Date(roomDue),
+        );
+        if (monthDifference > 0) {
+            hasInterest = true;
+        }
+    }
+
     useEffect(() => {
         let total = 0;
         if (selectedBill) {
@@ -49,6 +64,9 @@ export default function PayBillModal({
                 total = selectedBill.necessityBill.total_bill + selectedBill.roomUtilityBill.total_bill;
             } else {
                 total = selectedBill.roomUtilityBill.total_bill;
+            }
+            if (hasInterest) {
+                total += selectedBill.roomUtilityBill.total_bill * .03;
             }
             setTotal(total);
         }
@@ -61,7 +79,7 @@ export default function PayBillModal({
             });
             setSelectedNecessities(selectedNecessities);
         }
-    }, [selectedBill, necessityList]);
+    }, [selectedBill, necessityList, hasInterest]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
@@ -103,6 +121,21 @@ export default function PayBillModal({
                                                 {selectedBill.roomUtilityBill.total_bill}
                                             </Td>
                                         </Tr>
+                                        :
+                                        null
+                                }
+                                {
+                                    (hasInterest && selectedBill)
+                                        ?
+                                        <>
+                                            <Tr>
+                                                <Th>Interest</Th>
+                                                <Th>3%</Th>
+                                                <Th isNumeric>
+                                                    {selectedBill.roomUtilityBill.total_bill + selectedBill.roomUtilityBill.total_bill * 0.03}
+                                                </Th>
+                                            </Tr>
+                                        </>
                                         :
                                         null
                                 }
@@ -150,12 +183,11 @@ export default function PayBillModal({
                                         :
                                         null
                                 }
-
                             </Tbody>
                             <Tfoot>
                                 <Tr>
                                     <Th></Th>
-                                    <Th>Total</Th>
+                                    <Th>Grand Total</Th>
                                     <Th isNumeric>
                                         {total}
                                     </Th>

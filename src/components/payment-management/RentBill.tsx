@@ -4,7 +4,7 @@ import {
     Flex, CardFooter, Stack,
 
 } from "@chakra-ui/react";
-import { format } from "date-fns";
+import { format, differenceInMonths } from "date-fns";
 
 import billImage from "/PaymentManagement/billImage.png";
 import {
@@ -23,6 +23,31 @@ export function RentBill({
     necessityBill, roomUtilityBill,
     necessityCount, onOpen, updateSelectedBill
 }: RentBIll) {
+
+
+    let hasInterest: null | boolean = null;
+
+    if (roomUtilityBill) {
+        const currentDate = format(new Date(), "yyyy-MM-dd");
+        const roomDue = roomUtilityBill.bill_due;
+        const monthDifference = differenceInMonths(
+            new Date(currentDate),
+            new Date(roomDue),
+        );
+        if (monthDifference > 0) {
+            hasInterest = true;
+        }
+    }
+    let total = null;
+    if (necessityBill) {
+        total = necessityBill.total_bill + roomUtilityBill.total_bill;
+    } else {
+        total = roomUtilityBill.total_bill;
+    }
+    if (hasInterest) {
+        total += roomUtilityBill.total_bill * .03;
+    }
+
     return (
         <Card
             direction="row" overflow='hidden' variant='outline'
@@ -52,14 +77,7 @@ export function RentBill({
                                 Total
                             </Text>
                             <Text color="brandPallete.background" fontWeight="medium">
-                                ₱
-                                {
-                                    (necessityBill)
-                                        ?
-                                        necessityBill.total_bill + roomUtilityBill.total_bill
-                                        :
-                                        roomUtilityBill.total_bill
-                                }
+                                ₱ {total}
                             </Text>
                         </Flex>
                         <Flex flexDirection="column" >
