@@ -119,6 +119,11 @@ export default function PaymentManagement() {
         }
     }, [selectedTenant]);
 
+    const [prevRoomUtilityBill, setPrevRoomUtilityBill] = useState<Array<RoomUtilityBill> | null>(null);
+
+    function updatePrevRoomUtilityBill(bill: Array<RoomUtilityBill> | null) {
+        setPrevRoomUtilityBill(bill);
+    }
 
     return (
         <Grid
@@ -131,6 +136,7 @@ export default function PaymentManagement() {
                 selectedTenant={selectedTenant}
                 updateRoomUtilityBills={updateRoomUtilityBills}
                 updateNecessityBills={updateNecessityBills}
+                prevUtilityBill={prevRoomUtilityBill}
             >
             </PayBillModal>
             <Flex
@@ -169,7 +175,7 @@ export default function PaymentManagement() {
                     {
                         (roomUtilityBills)
                             ?
-                            roomUtilityBills.map((roomBill) => {
+                            roomUtilityBills.map((roomBill, index, array) => {
                                 let necessityBill: NecessityBill | null = null;
                                 if (necessityBills) {
                                     necessityBill = necessityBills.filter((necessityBill) => {
@@ -183,6 +189,8 @@ export default function PaymentManagement() {
                                         roomUtilityBill={roomBill} necessityBill={necessityBill}
                                         necessityCount={(necessityList) ? necessityList.length : 0}
                                         updateSelectedBill={updateSelectedBIll}
+                                        prevUtilityBill={(index >= 1) ? [...array.slice(0, index)] : null}
+                                        updatePrevRoomUtilityBill={updatePrevRoomUtilityBill}
                                     />
                                 );
                             })

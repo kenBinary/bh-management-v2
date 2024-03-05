@@ -13,7 +13,7 @@ import {
 } from '../../services/payment-management/paymentServices';
 import { differenceInMonths, format } from "date-fns";
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 interface PayBillModal {
     isOpen: boolean;
     onClose: () => void;
@@ -22,7 +22,7 @@ interface PayBillModal {
     selectedTenant: AssignedTenant | null;
     updateRoomUtilityBills: (roomUtilityBills: Array<RoomUtilityBill> | null) => void;
     updateNecessityBills: (necessityBills: Array<NecessityBill> | null) => void;
-
+    prevUtilityBill: Array<RoomUtilityBill> | null;
 }
 interface SelectedNecessities {
     [key: string]: boolean;
@@ -31,7 +31,8 @@ interface SelectedNecessities {
 export default function PayBillModal({
     isOpen, onClose, selectedBill,
     necessityList, selectedTenant,
-    updateRoomUtilityBills, updateNecessityBills
+    updateRoomUtilityBills, updateNecessityBills,
+    prevUtilityBill
 }: PayBillModal) {
 
     const [total, setTotal] = useState<number>(0);
@@ -125,17 +126,31 @@ export default function PayBillModal({
                                         null
                                 }
                                 {
-                                    (hasInterest && selectedBill)
+                                    (prevUtilityBill && prevUtilityBill.length > 0)
                                         ?
-                                        <>
-                                            <Tr>
-                                                <Th>Interest</Th>
-                                                <Th>3%</Th>
-                                                <Th isNumeric>
-                                                    {selectedBill.roomUtilityBill.total_bill + selectedBill.roomUtilityBill.total_bill * 0.03}
-                                                </Th>
-                                            </Tr>
-                                        </>
+                                        prevUtilityBill.map((bill, index, array) => {
+                                            return (
+                                                <Fragment key={index}>
+                                                    <Tr>
+                                                        <Th>{`${format(new Date(bill.bill_due), "MMMM")}`} Bill Carryover</Th>
+                                                        <Th>
+                                                            Overdue Bill
+                                                        </Th>
+                                                        <Th isNumeric>
+                                                            {bill.total_bill}
+                                                        </Th>
+                                                    </Tr>
+                                                    <Tr>
+                                                        <Th>Interest</Th>
+                                                        {/* <Th>3%</Th> */}
+                                                        <Th>{`${3 * (array.slice(index).length)} %`}</Th>
+                                                        <Th isNumeric>
+                                                            {bill.total_bill * (0.03 * (array.slice(index).length))}
+                                                        </Th>
+                                                    </Tr>
+                                                </Fragment>
+                                            );
+                                        })
                                         :
                                         null
                                 }
@@ -189,7 +204,16 @@ export default function PayBillModal({
                                     <Th></Th>
                                     <Th>Grand Total</Th>
                                     <Th isNumeric>
-                                        {total}
+                                        {
+                                            (prevUtilityBill && prevUtilityBill.length > 0)
+                                                ?
+                                                // total + prevUtilityBill.total_bill + prevUtilityBill.total_bill * .03
+                                                total + prevUtilityBill.reduce((accumulator, currentValue, index, array) => {
+                                                    return accumulator + currentValue.total_bill + currentValue.total_bill * (.03 * (array.slice(index).length));
+                                                }, 0)
+                                                :
+                                                total
+                                        }
                                     </Th>
                                 </Tr>
                             </Tfoot>

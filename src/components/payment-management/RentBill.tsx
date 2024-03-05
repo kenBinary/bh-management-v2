@@ -4,7 +4,7 @@ import {
     Flex, CardFooter, Stack,
 
 } from "@chakra-ui/react";
-import { format, differenceInMonths } from "date-fns";
+import { format } from "date-fns";
 
 import billImage from "/PaymentManagement/billImage.png";
 import {
@@ -18,34 +18,26 @@ interface RentBIll {
     necessityCount: number;
     onOpen: () => void;
     updateSelectedBill: (bill: SelectedBill) => void;
+    // prevUtilityBill: RoomUtilityBill | null;
+    prevUtilityBill: Array<RoomUtilityBill> | null;
+    updatePrevRoomUtilityBill: (bill: Array<RoomUtilityBill> | null) => void;
 }
 export function RentBill({
     necessityBill, roomUtilityBill,
-    necessityCount, onOpen, updateSelectedBill
+    necessityCount, onOpen, updateSelectedBill,
+    prevUtilityBill, updatePrevRoomUtilityBill
 }: RentBIll) {
 
-
-    let hasInterest: null | boolean = null;
-
-    if (roomUtilityBill) {
-        const currentDate = format(new Date(), "yyyy-MM-dd");
-        const roomDue = roomUtilityBill.bill_due;
-        const monthDifference = differenceInMonths(
-            new Date(currentDate),
-            new Date(roomDue),
-        );
-        if (monthDifference > 0) {
-            hasInterest = true;
-        }
-    }
-    let total = null;
+    let total: number = 0;
     if (necessityBill) {
         total = necessityBill.total_bill + roomUtilityBill.total_bill;
     } else {
         total = roomUtilityBill.total_bill;
     }
-    if (hasInterest) {
-        total += roomUtilityBill.total_bill * .03;
+    if (prevUtilityBill && prevUtilityBill.length > 0) {
+        prevUtilityBill.forEach((bill) => {
+            total += bill.total_bill * 0.03 + bill.total_bill;
+        });
     }
 
     return (
@@ -111,6 +103,11 @@ export function RentBill({
                     <Button
                         variant='solid' colorScheme='teal'
                         onClick={() => {
+                            if (prevUtilityBill && prevUtilityBill.length > 0) {
+                                updatePrevRoomUtilityBill(prevUtilityBill);
+                            } else {
+                                updatePrevRoomUtilityBill(null);
+                            }
                             updateSelectedBill({
                                 necessityBill: necessityBill,
                                 roomUtilityBill: roomUtilityBill,
