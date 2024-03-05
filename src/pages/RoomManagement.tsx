@@ -55,6 +55,44 @@ export default function RoomManagement() {
 
     }, []);
 
+    function filterByStatus(statusType: string) {
+        fetch("http://localhost:3000/room", {
+            method: "GET"
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            const roomList = response;
+            const newList = roomList.filter((room: RoomSchema) => {
+                return room.room_status === statusType;
+            });
+            setRoomList(newList);
+        });
+    }
+
+    function filterByPrice(price: number) {
+        fetch("http://localhost:3000/room", {
+            method: "GET"
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            const roomList = response;
+            const newList = roomList.filter((room: RoomSchema) => {
+                return room.room_fee === price;
+            });
+            setRoomList(newList);
+        });
+    }
+
+    function clearFilter() {
+        fetch("http://localhost:3000/room", {
+            method: "GET"
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            setRoomList(response);
+        });
+    }
+
     return (
         <Grid
             padding={4} gap="2" h="90%" gridTemplateRows="1fr 3fr" gridTemplateColumns="1fr 4fr"
@@ -79,22 +117,52 @@ export default function RoomManagement() {
                         Filter
                     </Heading>
                     <Spacer></Spacer>
-                    <Button size='xs' colorScheme="teal">
+                    <Button size='xs' colorScheme="teal"
+                        onClick={() => {
+                            clearFilter();
+                        }}
+                    >
                         Clear
                     </Button>
                 </HStack>
                 <Text fontSize='md' fontWeight='semibold'>Room Status</Text>
                 <RadioGroup>
                     <VStack align="start">
-                        <Radio value="occupied" colorScheme="teal">Occupied</Radio>
-                        <Radio value="vacant" colorScheme="teal">Vacant</Radio>
+                        <Radio value="occupied" colorScheme="teal"
+                            onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                if (isChecked) {
+                                    filterByStatus("occupied");
+                                }
+                            }}
+                        >Occupied</Radio>
+                        <Radio value="vacant" colorScheme="teal"
+                            onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                if (isChecked) {
+                                    filterByStatus("vacant");
+                                }
+                            }}
+                        >Vacant</Radio>
                     </VStack>
                 </RadioGroup>
                 <Text fontSize='md' fontWeight='semibold'>Room Price</Text>
                 <RadioGroup>
                     <VStack align="start">
-                        <Radio value="2700" colorScheme="teal">2700 php</Radio>
-                        <Radio value="3500" colorScheme="teal">3500 php</Radio>
+                        <Radio value="2700" colorScheme="teal"
+                            onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                if (isChecked) {
+                                    filterByPrice(2700);
+                                }
+                            }}>2700 php</Radio>
+                        <Radio value="3500" colorScheme="teal"
+                            onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                if (isChecked) {
+                                    filterByPrice(3500);
+                                }
+                            }}>3500 php</Radio>
                     </VStack>
                 </RadioGroup>
             </GridItem>
