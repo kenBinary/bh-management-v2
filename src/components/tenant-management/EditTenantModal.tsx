@@ -33,12 +33,25 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant, updat
         const contactInput = contactRef.current;
         const emailInput = emailRef.current;
 
-        if (firstNameInput && lastNameInput && contactInput && emailInput && newFile) {
-            const response = await editTenant(
-                selectedTenant.tenant_id, firstNameInput.value,
-                lastNameInput.value, Number(contactInput.value),
-                emailInput.value, newFile,
-            );
+
+        if (firstNameInput && lastNameInput && contactInput && emailInput) {
+            let response = null;
+            if (newFile) {
+                response = await editTenant(
+                    selectedTenant.tenant_id, firstNameInput.value,
+                    lastNameInput.value, Number(contactInput.value),
+                    emailInput.value, newFile,
+                );
+            } else {
+                if (selectedTenant.tenant_image) {
+                    response = await editTenant(
+                        selectedTenant.tenant_id, firstNameInput.value,
+                        lastNameInput.value, Number(contactInput.value),
+                        emailInput.value, selectedTenant.tenant_image,
+                    );
+                }
+            }
+
             if (response === "fail") {
                 toast({
                     description: "Tenant Edit fail",
@@ -53,7 +66,7 @@ export default function EditTenantModal({ isOpen, onClose, selectedTenant, updat
                     ...response,
                 });
                 toast({
-                    description: "Tenant Registration sucess",
+                    description: "Tenant Edit sucess",
                     status: 'success',
                     duration: 5000,
                     isClosable: true,
