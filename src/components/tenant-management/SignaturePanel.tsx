@@ -119,7 +119,7 @@ export function SignaturePanel({
                 </Flex>
                 <Box
                     gridColumn="1/2" pointerEvents={`${(isLandlordConfirmed || signatures) ? "none" : "auto"}`}
-                    border={`2px solid ${(isLandlordConfirmed) ? "green" : "red"}`} borderRadius="md"
+                    border={`2px solid ${(isLandlordConfirmed || (signatures && signatures.landlord)) ? "green" : "red"}`} borderRadius="md"
                 >
                     {
                         (signatures)
@@ -175,7 +175,7 @@ export function SignaturePanel({
                 <Box
                     pointerEvents={`${(isTenantConfirmed || signatures) ? "none" : "auto"}`}
                     gridColumn="2/3" gridRow="2/3"
-                    border={`2px solid ${(isTenantConfirmed) ? "green" : "red"}`} borderRadius="md"
+                    border={`2px solid ${(isTenantConfirmed || (signatures && signatures.tenant)) ? "green" : "red"}`} borderRadius="md"
                 >
                     {
                         (signatures)
