@@ -2,8 +2,8 @@ import {
     Modal, ModalOverlay, ModalContent,
     ModalHeader, ModalFooter, ModalBody,
     ModalCloseButton, Button, FormControl,
-    Input, NumberInput, NumberInputField,
-    FormLabel, useToast
+    Input, InputGroup,
+    FormLabel, useToast, InputLeftAddon
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
@@ -68,10 +68,13 @@ export default function AddTenantModal({ isOpen, onClose, updateTenantList, tena
 
                         <FormControl isRequired>
                             <FormLabel>Contact Number</FormLabel>
-                            <NumberInput>
-                                <NumberInputField
-                                    placeholder='e.g. 0927323578'
-                                    value={tenantDetails.contact_number}
+                            <InputGroup>
+                                <InputLeftAddon>
+                                    +63
+                                </InputLeftAddon>
+                                <Input
+                                    placeholder="e.g. 0927323578" type="number"
+                                    value={(tenantDetails.contact_number) ? tenantDetails.contact_number : ''}
                                     onChange={(e) => {
                                         setTenantDetails({
                                             ...tenantDetails,
@@ -79,7 +82,9 @@ export default function AddTenantModal({ isOpen, onClose, updateTenantList, tena
                                         });
                                     }}
                                 />
-                            </NumberInput>
+                            </InputGroup>
+
+
                         </FormControl>
 
                         <FormControl>
@@ -119,7 +124,7 @@ export default function AddTenantModal({ isOpen, onClose, updateTenantList, tena
                             const response = await addTenant(tenantDetails);
                             if (response === "fail") {
                                 toast({
-                                    description: "Tenant Registration fail",
+                                    description: "Input required fields in correct format",
                                     status: 'error',
                                     duration: 5000,
                                     isClosable: true,
@@ -132,8 +137,15 @@ export default function AddTenantModal({ isOpen, onClose, updateTenantList, tena
                                     duration: 5000,
                                     isClosable: true,
                                 });
+                                setTenantDetails({
+                                    first_name: '',
+                                    last_name: '',
+                                    contact_number: 0,
+                                    email: "",
+                                    tenant_image: null,
+                                });
+                                onClose();
                             }
-                            onClose();
                         }}>
                             Add
                         </Button>
