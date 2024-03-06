@@ -18,25 +18,31 @@ interface RentBIll {
     necessityCount: number;
     onOpen: () => void;
     updateSelectedBill: (bill: SelectedBill) => void;
-    // prevUtilityBill: RoomUtilityBill | null;
     prevUtilityBill: Array<RoomUtilityBill> | null;
     updatePrevRoomUtilityBill: (bill: Array<RoomUtilityBill> | null) => void;
+    maxPrevBills: number;
+    updateIsPayable: (payable: boolean) => void;
 }
 export function RentBill({
     necessityBill, roomUtilityBill,
     necessityCount, onOpen, updateSelectedBill,
-    prevUtilityBill, updatePrevRoomUtilityBill
+    prevUtilityBill, updatePrevRoomUtilityBill,
+    maxPrevBills, updateIsPayable
 }: RentBIll) {
+    const doubleRoom = [14, 15, 16, 17];
+    const isDoubleRoom = doubleRoom.includes(roomUtilityBill.room_number);
+    const roomBaseTotal = (isDoubleRoom) ? 3700 : 2900;
 
     let total: number = 0;
     if (necessityBill) {
-        total = necessityBill.total_bill + roomUtilityBill.total_bill;
+        total = necessityBill.total_bill + roomBaseTotal;
     } else {
-        total = roomUtilityBill.total_bill;
+        total = roomBaseTotal;
     }
     if (prevUtilityBill && prevUtilityBill.length > 0) {
         prevUtilityBill.forEach((bill) => {
-            total += bill.total_bill * 0.03 + bill.total_bill;
+            const overDueMonths = (bill.total_bill - roomBaseTotal) / ((roomBaseTotal) * (0.03));
+            total += roomBaseTotal * (0.03 * (overDueMonths)) + roomBaseTotal;
         });
     }
 
@@ -112,10 +118,12 @@ export function RentBill({
                                 necessityBill: necessityBill,
                                 roomUtilityBill: roomUtilityBill,
                             });
+                            const isPayable = (prevUtilityBill && (prevUtilityBill.length) === maxPrevBills - 1) ? true : false;
+                            updateIsPayable(isPayable);
                             onOpen();
                         }}
                     >
-                        Pay
+                        {(prevUtilityBill && (prevUtilityBill.length) === maxPrevBills - 1) ? "Pay" : "Details"}
                     </Button>
                 </CardFooter>
             </Stack>

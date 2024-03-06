@@ -125,6 +125,12 @@ export default function PaymentManagement() {
         setPrevRoomUtilityBill(bill);
     }
 
+    const [isPayable, setIsPayable] = useState<boolean>(false);
+
+    function updateIsPayable(payable: boolean) {
+        setIsPayable(payable);
+    }
+
     return (
         <Grid
             h="90%" padding="4" as="section" gridTemplateColumns="5fr 2fr" gridTemplateRows="1fr 1fr"
@@ -137,6 +143,7 @@ export default function PaymentManagement() {
                 updateRoomUtilityBills={updateRoomUtilityBills}
                 updateNecessityBills={updateNecessityBills}
                 prevUtilityBill={prevRoomUtilityBill}
+                isPayable={isPayable}
             >
             </PayBillModal>
             <Flex
@@ -191,6 +198,7 @@ export default function PaymentManagement() {
                                         updateSelectedBill={updateSelectedBIll}
                                         prevUtilityBill={(index >= 1) ? [...array.slice(0, index)] : null}
                                         updatePrevRoomUtilityBill={updatePrevRoomUtilityBill}
+                                        maxPrevBills={array.length} updateIsPayable={updateIsPayable}
                                     />
                                 );
                             })

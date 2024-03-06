@@ -23,6 +23,7 @@ interface PayBillModal {
     updateRoomUtilityBills: (roomUtilityBills: Array<RoomUtilityBill> | null) => void;
     updateNecessityBills: (necessityBills: Array<NecessityBill> | null) => void;
     prevUtilityBill: Array<RoomUtilityBill> | null;
+    isPayable: boolean;
 }
 interface SelectedNecessities {
     [key: string]: boolean;
@@ -32,7 +33,7 @@ export default function PayBillModal({
     isOpen, onClose, selectedBill,
     necessityList, selectedTenant,
     updateRoomUtilityBills, updateNecessityBills,
-    prevUtilityBill
+    prevUtilityBill, isPayable
 }: PayBillModal) {
 
     const [total, setTotal] = useState<number>(0);
@@ -44,30 +45,20 @@ export default function PayBillModal({
     }
 
 
-    let hasInterest: null | boolean = null;
-
+    let roomBaseTotal = 0;
     if (selectedBill) {
-        const currentDate = format(new Date(), "yyyy-MM-dd");
-        const roomDue = selectedBill.roomUtilityBill.bill_due;
-        const monthDifference = differenceInMonths(
-            new Date(currentDate),
-            new Date(roomDue),
-        );
-        if (monthDifference > 0) {
-            hasInterest = true;
-        }
+        const doubleRoom = [14, 15, 16, 17];
+        const isDoubleRoom = doubleRoom.includes(selectedBill.roomUtilityBill.room_number);
+        roomBaseTotal = (isDoubleRoom) ? 3700 : 2900;
     }
 
     useEffect(() => {
         let total = 0;
         if (selectedBill) {
             if (selectedBill.necessityBill) {
-                total = selectedBill.necessityBill.total_bill + selectedBill.roomUtilityBill.total_bill;
+                total = selectedBill.necessityBill.total_bill + roomBaseTotal;
             } else {
-                total = selectedBill.roomUtilityBill.total_bill;
-            }
-            if (hasInterest) {
-                total += selectedBill.roomUtilityBill.total_bill * .03;
+                total = roomBaseTotal;
             }
             setTotal(total);
         }
@@ -80,7 +71,7 @@ export default function PayBillModal({
             });
             setSelectedNecessities(selectedNecessities);
         }
-    }, [selectedBill, necessityList, hasInterest]);
+    }, [selectedBill, necessityList, prevUtilityBill, roomBaseTotal]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
@@ -119,7 +110,7 @@ export default function PayBillModal({
                                                 {selectedBill.roomUtilityBill.room_number}
                                             </Td>
                                             <Td isNumeric>
-                                                {selectedBill.roomUtilityBill.total_bill}
+                                                {roomBaseTotal}
                                             </Td>
                                         </Tr>
                                         :
@@ -128,7 +119,8 @@ export default function PayBillModal({
                                 {
                                     (prevUtilityBill && prevUtilityBill.length > 0)
                                         ?
-                                        prevUtilityBill.map((bill, index, array) => {
+                                        prevUtilityBill.map((bill, index) => {
+                                            const overdueMonths = differenceInMonths(new Date("2024-05-07"), new Date(bill.bill_due));
                                             return (
                                                 <Fragment key={index}>
                                                     <Tr>
@@ -137,15 +129,14 @@ export default function PayBillModal({
                                                             Overdue Bill
                                                         </Th>
                                                         <Th isNumeric>
-                                                            {bill.total_bill}
+                                                            {roomBaseTotal}
                                                         </Th>
                                                     </Tr>
                                                     <Tr>
                                                         <Th>Interest</Th>
-                                                        {/* <Th>3%</Th> */}
-                                                        <Th>{`${3 * (array.slice(index).length)} %`}</Th>
+                                                        <Th>{`${3 * (overdueMonths + 1)} %`}</Th>
                                                         <Th isNumeric>
-                                                            {bill.total_bill * (0.03 * (array.slice(index).length))}
+                                                            {roomBaseTotal * (0.03 * (overdueMonths + 1))}
                                                         </Th>
                                                     </Tr>
                                                 </Fragment>
@@ -207,9 +198,8 @@ export default function PayBillModal({
                                         {
                                             (prevUtilityBill && prevUtilityBill.length > 0)
                                                 ?
-                                                // total + prevUtilityBill.total_bill + prevUtilityBill.total_bill * .03
-                                                total + prevUtilityBill.reduce((accumulator, currentValue, index, array) => {
-                                                    return accumulator + currentValue.total_bill + currentValue.total_bill * (.03 * (array.slice(index).length));
+                                                total + prevUtilityBill.reduce((accumulator, currentValue) => {
+                                                    return accumulator + currentValue.total_bill;
                                                 }, 0)
                                                 :
                                                 total
@@ -222,41 +212,47 @@ export default function PayBillModal({
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button
-                        colorScheme='teal' mr={3}
-                        onClick={() => {
-                            if (selectedBill && selectedTenant) {
-                                const roomBill = selectedBill.roomUtilityBill;
-                                const necessityBill = selectedBill.necessityBill;
+                    {
+                        (isPayable)
+                            ?
+                            <Button
+                                colorScheme='teal' mr={3}
+                                onClick={() => {
+                                    if (selectedBill && selectedTenant) {
+                                        const roomBill = selectedBill.roomUtilityBill;
+                                        const necessityBill = selectedBill.necessityBill;
 
-                                payRoomUtilityBills(
-                                    roomBill.room_utility_bill_id, roomBill.room_number, roomBill.bill_due,
-                                    selectedTenant.contract_id,
-                                ).then((response) => {
-                                    if (response !== "fail" && response.data.length > 0) {
-                                        updateRoomUtilityBills(response.data);
-                                    } else {
-                                        updateRoomUtilityBills(null);
-                                    }
-                                });
-                                if (necessityBill) {
-                                    payNecessityBill(
-                                        necessityBill.necessity_bill_id, selectedTenant.contract_id,
-                                        selectedNecessities, necessityBill.bill_due
-                                    ).then((response) => {
-                                        if (response !== "fail" && response.data.length > 0) {
-                                            updateNecessityBills(response.data);
-                                        } else {
-                                            updateNecessityBills(null);
+                                        payRoomUtilityBills(
+                                            roomBill.room_utility_bill_id, roomBill.room_number, roomBill.bill_due,
+                                            selectedTenant.contract_id,
+                                        ).then((response) => {
+                                            if (response !== "fail" && response.data.length > 0) {
+                                                updateRoomUtilityBills(response.data);
+                                            } else {
+                                                updateRoomUtilityBills(null);
+                                            }
+                                        });
+                                        if (necessityBill) {
+                                            payNecessityBill(
+                                                necessityBill.necessity_bill_id, selectedTenant.contract_id,
+                                                selectedNecessities, necessityBill.bill_due
+                                            ).then((response) => {
+                                                if (response !== "fail" && response.data.length > 0) {
+                                                    updateNecessityBills(response.data);
+                                                } else {
+                                                    updateNecessityBills(null);
+                                                }
+                                            });
                                         }
-                                    });
-                                }
-                            }
-                            onClose();
-                        }}
-                    >
-                        Pay
-                    </Button>
+                                    }
+                                    onClose();
+                                }}
+                            >
+                                Pay
+                            </Button>
+                            :
+                            null
+                    }
                     <Button colorScheme='red' variant='outline'
                         onClick={() => {
                             onClose();
