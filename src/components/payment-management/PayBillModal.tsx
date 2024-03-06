@@ -120,7 +120,7 @@ export default function PayBillModal({
                                     (prevUtilityBill && prevUtilityBill.length > 0)
                                         ?
                                         prevUtilityBill.map((bill, index) => {
-                                            const overdueMonths = differenceInMonths(new Date("2024-05-07"), new Date(bill.bill_due));
+                                            const overdueMonths = differenceInMonths(new Date(), new Date(bill.bill_due));
                                             return (
                                                 <Fragment key={index}>
                                                     <Tr>
@@ -222,16 +222,43 @@ export default function PayBillModal({
                                         const roomBill = selectedBill.roomUtilityBill;
                                         const necessityBill = selectedBill.necessityBill;
 
-                                        payRoomUtilityBills(
-                                            roomBill.room_utility_bill_id, roomBill.room_number, roomBill.bill_due,
-                                            selectedTenant.contract_id,
-                                        ).then((response) => {
-                                            if (response !== "fail" && response.data.length > 0) {
-                                                updateRoomUtilityBills(response.data);
-                                            } else {
-                                                updateRoomUtilityBills(null);
-                                            }
-                                        });
+                                        if (prevUtilityBill && prevUtilityBill.length > 0) {
+                                            prevUtilityBill.forEach((bill) => {
+                                                payRoomUtilityBills(
+                                                    bill.room_utility_bill_id, bill.room_number, bill.bill_due,
+                                                    selectedTenant.contract_id,
+                                                );
+                                            });
+                                            payRoomUtilityBills(
+                                                roomBill.room_utility_bill_id, roomBill.room_number, roomBill.bill_due,
+                                                selectedTenant.contract_id,
+                                            ).then((response) => {
+                                                if (response !== "fail" && response.data.length > 0) {
+                                                    const lastElement = response.data.pop();
+                                                    if (lastElement) {
+                                                        updateRoomUtilityBills([lastElement]);
+                                                    } else {
+                                                        updateRoomUtilityBills(null);
+                                                    }
+                                                } else {
+                                                    updateRoomUtilityBills(null);
+                                                }
+                                            });
+                                        } else {
+                                            payRoomUtilityBills(
+                                                roomBill.room_utility_bill_id, roomBill.room_number, roomBill.bill_due,
+                                                selectedTenant.contract_id,
+                                            ).then((response) => {
+                                                if (response !== "fail" && response.data.length > 0) {
+                                                    console.log(response.data);
+                                                    updateRoomUtilityBills(response.data);
+                                                } else {
+                                                    updateRoomUtilityBills(null);
+                                                }
+                                            });
+                                        }
+
+
                                         if (necessityBill) {
                                             payNecessityBill(
                                                 necessityBill.necessity_bill_id, selectedTenant.contract_id,
