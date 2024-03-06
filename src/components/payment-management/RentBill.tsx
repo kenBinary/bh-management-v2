@@ -118,12 +118,12 @@ export function RentBill({
                                 necessityBill: necessityBill,
                                 roomUtilityBill: roomUtilityBill,
                             });
-                            const isPayable = (prevUtilityBill && (prevUtilityBill.length) === maxPrevBills - 1) ? true : false;
+                            const isPayable = (maxPrevBills === 1 || (prevUtilityBill && (prevUtilityBill.length) === maxPrevBills - 1)) ? true : false;
                             updateIsPayable(isPayable);
                             onOpen();
                         }}
                     >
-                        {(prevUtilityBill && (prevUtilityBill.length) === maxPrevBills - 1) ? "Pay" : "Details"}
+                        Details
                     </Button>
                 </CardFooter>
             </Stack>
