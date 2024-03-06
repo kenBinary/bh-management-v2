@@ -2,7 +2,7 @@ import {
     Modal, ModalOverlay, ModalContent,
     ModalHeader, ModalFooter, ModalBody,
     ModalCloseButton, Button, Heading,
-    Select, useToast
+    Select, useToast, Text
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { getTenants, RoomSchema, TenantSchema } from '../../services/room-management/RoomServices';
@@ -79,46 +79,59 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
 
                 <ModalBody>
                     <Heading size='md'>Tenant List</Heading>
-                    <Select
-                        onChange={(e) => {
-                            const [tenantId, contractId] = e.target.value.split(" ");
-                            updateSelectedTenant({
-                                tenant_id: tenantId,
-                                contract_id: contractId,
-                            });
-                        }}
-                    >
-                        {
-                            (tenantList !== null && tenantList.length > 0)
-                                ?
-                                tenantList.map((e) => {
-                                    const fullName = e.first_name + e.last_name;
-                                    return (
-                                        <option
-                                            key={e.tenant_id} value={`${e.tenant_id} ${e.contract_id}`}
-                                        >
-                                            {fullName}
-                                        </option>
-                                    );
-                                })
-                                :
-                                null
-                        }
-                    </Select>
+                    {
+                        (tenantList && tenantList.length > 0)
+                            ?
+                            <Select
+                                onChange={(e) => {
+                                    const [tenantId, contractId] = e.target.value.split(" ");
+                                    updateSelectedTenant({
+                                        tenant_id: tenantId,
+                                        contract_id: contractId,
+                                    });
+                                }}
+                            >
+                                {
+                                    (tenantList !== null && tenantList.length > 0)
+                                        ?
+                                        tenantList.map((e) => {
+                                            const fullName = e.first_name + e.last_name;
+                                            return (
+                                                <option
+                                                    key={e.tenant_id} value={`${e.tenant_id} ${e.contract_id}`}
+                                                >
+                                                    {fullName}
+                                                </option>
+                                            );
+                                        })
+                                        :
+                                        null
+                                }
+                            </Select>
+                            :
+                            <Text>No tenant can be assigned</Text>
+                    }
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button
-                        colorScheme='teal' mr={3}
-                        onClick={() => {
-                            if (selectedTenant !== null && room !== null) {
-                                handleAssign(selectedTenant, room);
-                            }
-                            onClose();
-                        }}
-                    >
-                        Assign
-                    </Button>
+                    {
+                        (tenantList && tenantList.length > 0)
+                            ?
+                            <Button
+                                colorScheme='teal' mr={3}
+                                onClick={() => {
+                                    if (selectedTenant !== null && room !== null) {
+                                        handleAssign(selectedTenant, room);
+                                    }
+                                    onClose();
+                                }}
+                            >
+                                Assign
+                            </Button>
+                            :
+                            null
+                    }
+
                     <Button colorScheme='red' variant='outline'
                         onClick={() => {
                             onClose();
