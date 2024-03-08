@@ -56,6 +56,7 @@ export interface RoomUtilityBill {
     date_paid: null | string;
     payment_status: number;
     room_utility_bill_id: string;
+    interest?: number;
 }
 
 interface GetRoomUtilityBill extends Response {
