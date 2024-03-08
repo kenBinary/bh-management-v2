@@ -11,9 +11,9 @@ import {
     AssignedTenant, payRoomUtilityBills, payNecessityBill, RoomUtilityBill,
     NecessityBill,
 } from '../../services/payment-management/paymentServices';
-import { differenceInMonths, format } from "date-fns";
+import { format } from "date-fns";
 
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 interface PayBillModal {
     isOpen: boolean;
     onClose: () => void;
@@ -59,6 +59,9 @@ export default function PayBillModal({
                 total = selectedBill.necessityBill.total_bill + roomBaseTotal;
             } else {
                 total = roomBaseTotal;
+            }
+            if (selectedBill.roomUtilityBill && selectedBill.roomUtilityBill.interest) {
+                total += selectedBill.roomUtilityBill.interest;
             }
             setTotal(total);
         }
@@ -120,28 +123,37 @@ export default function PayBillModal({
                                     (prevUtilityBill && prevUtilityBill.length > 0)
                                         ?
                                         prevUtilityBill.map((bill, index) => {
-                                            const overdueMonths = differenceInMonths(new Date(), new Date(bill.bill_due));
                                             return (
-                                                <Fragment key={index}>
-                                                    <Tr>
-                                                        <Th>{`${format(new Date(bill.bill_due), "MMMM")}`} Bill Carryover</Th>
-                                                        <Th>
-                                                            Overdue Bill
-                                                        </Th>
-                                                        <Th isNumeric>
-                                                            {roomBaseTotal}
-                                                        </Th>
-                                                    </Tr>
-                                                    <Tr>
-                                                        <Th>Interest</Th>
-                                                        <Th>{`${3 * (overdueMonths + 1)} %`}</Th>
-                                                        <Th isNumeric>
-                                                            {roomBaseTotal * (0.03 * (overdueMonths + 1))}
-                                                        </Th>
-                                                    </Tr>
-                                                </Fragment>
+                                                <Tr key={index}>
+                                                    <Th>{`${format(new Date(bill.bill_due), "MMMM")}`} Bill Carryover</Th>
+                                                    <Th>
+                                                        Overdue Bill
+                                                    </Th>
+                                                    <Th isNumeric>
+                                                        {roomBaseTotal}
+                                                    </Th>
+                                                </Tr>
                                             );
                                         })
+                                        :
+                                        null
+                                }
+                                {
+                                    (prevUtilityBill && prevUtilityBill.length > 0)
+                                        ?
+                                        <Tr>
+                                            <Th>Interest</Th>
+                                            <Th>3%</Th>
+                                            <Th isNumeric>
+                                                {
+                                                    (selectedBill && selectedBill.roomUtilityBill)
+                                                        ?
+                                                        selectedBill.roomUtilityBill.interest
+                                                        :
+                                                        0
+                                                }
+                                            </Th>
+                                        </Tr>
                                         :
                                         null
                                 }
