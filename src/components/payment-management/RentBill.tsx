@@ -39,10 +39,12 @@ export function RentBill({
     } else {
         total = roomBaseTotal;
     }
+    if (roomUtilityBill.interest) {
+        total += roomUtilityBill.interest;
+    }
     if (prevUtilityBill && prevUtilityBill.length > 0) {
         prevUtilityBill.forEach((bill) => {
-            const overDueMonths = (bill.total_bill - roomBaseTotal) / ((roomBaseTotal) * (0.03));
-            total += roomBaseTotal * (0.03 * (overDueMonths)) + roomBaseTotal;
+            total += bill.total_bill;
         });
     }
 
