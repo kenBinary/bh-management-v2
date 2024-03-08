@@ -178,13 +178,9 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                     <Parties
                                         fullName={`${tenant.first_name} ${tenant.last_name}`}
                                     ></Parties>
-                                    <SimpleGrid columns={4}>
-                                        <Heading size="xs">Room Type</Heading>
-                                        <Heading size="xs">Room Number</Heading>
+                                    <SimpleGrid columns={2} gap="2">
                                         <Heading size="xs">Start Date</Heading>
                                         <Heading size="xs">End Date</Heading>
-                                        <Text>-----</Text>
-                                        <Text>-----</Text>
                                         {
                                             (contract) ?
                                                 <Text>{contract.start_date}</Text>
@@ -222,24 +218,7 @@ export default function ContractDrawer({ isOpen, onClose, btnRef, tenant, contra
                                                 ></Input>
                                         }
                                     </SimpleGrid>
-                                    <Heading size="md">Rent</Heading>
-                                    <SimpleGrid columns={2}>
-                                        <Heading size="xs">Monthly Rent</Heading>
-                                        <Heading size="xs">Next Rent Due</Heading>
-                                        <Text>-----</Text>
-                                        {
-                                            (contract) ?
-                                                <Text>02-05-2024</Text>
-                                                :
-                                                <Text>Rent is due on the 5th day of each month</Text>
-                                        }
-                                    </SimpleGrid>
-                                    {
-                                        (contract) ?
-                                            null
-                                            :
-                                            <GeneralTerms></GeneralTerms>
-                                    }
+                                    <GeneralTerms></GeneralTerms>
                                 </TabPanel>
 
                                 <NecessityPanel

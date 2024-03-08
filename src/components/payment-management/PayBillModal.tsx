@@ -108,10 +108,10 @@ export default function PayBillModal({
                                     (selectedBill && selectedBill.roomUtilityBill)
                                         ?
                                         <Tr>
-                                            <Td>Room</Td>
                                             <Td>
-                                                {selectedBill.roomUtilityBill.room_number}
+                                                {`Bill For ${format(new Date(selectedBill.roomUtilityBill.bill_due), "MMMM")}`}
                                             </Td>
+                                            <Td>{`Room # ${selectedBill.roomUtilityBill.room_number}`}</Td>
                                             <Td isNumeric>
                                                 {roomBaseTotal}
                                             </Td>

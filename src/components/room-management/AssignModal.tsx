@@ -95,7 +95,7 @@ export default function AssignModal({ isOpen, onClose, room, updateRoomList }: A
                                     (tenantList !== null && tenantList.length > 0)
                                         ?
                                         tenantList.map((e) => {
-                                            const fullName = e.first_name + e.last_name;
+                                            const fullName = e.first_name + " " + e.last_name;
                                             return (
                                                 <option
                                                     key={e.tenant_id} value={`${e.tenant_id} ${e.contract_id}`}

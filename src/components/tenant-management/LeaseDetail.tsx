@@ -1,7 +1,7 @@
 import {
     Flex, Heading, Text,
     Box, Image, Grid, Button,
-    useDisclosure, SimpleGrid
+    useDisclosure, SimpleGrid, Tooltip
 
 } from "@chakra-ui/react";
 import { LiaCoinsSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
@@ -155,7 +155,12 @@ export default function LeaseDetail({ selectedTenant }: LeaseDetail) {
 
                     <SimpleGrid flex="1" columns={2} rowGap="2">
                         <Box flex="1 0 50%">
-                            <Text color="brandPallete.background">Current Invoices</Text>
+                            <Tooltip
+                                label="7 Days within recent bill due" color="brandPallete.background" bg="brandPallete.accent"
+                                hasArrow placement="top"
+                            >
+                                Current Invoices
+                            </Tooltip>
                             <Text color="brandPallete.background">{collectionDetails.currentInvoices}</Text>
                         </Box>
                         <Box flex="1 0 50%">
@@ -163,11 +168,17 @@ export default function LeaseDetail({ selectedTenant }: LeaseDetail) {
                             <Text color="brandPallete.background">{collectionDetails.totalRent}</Text>
                         </Box>
                         <Box flex="1 0 50%">
-                            <Text color="brandPallete.background">Past Due Invoices</Text>
+                            <Text color="brandPallete.background">Overdue Invoices</Text>
                             <Text color="brandPallete.background">{collectionDetails.pastDueInvoices}</Text>
                         </Box>
                         <Box flex="1 0 50%">
-                            <Text color="brandPallete.background">Other Collected</Text>
+                            <Tooltip
+                                label="Necessities" color="brandPallete.background" bg="brandPallete.accent"
+                                hasArrow placement="top"
+                            >
+                                Other Collected
+                            </Tooltip>
+                            <Text color="brandPallete.background"></Text>
                             <Text color="brandPallete.background">{collectionDetails.totalNecessity}</Text>
                         </Box>
                         <Box flex="1 0 50%" gridColumn="2/3">

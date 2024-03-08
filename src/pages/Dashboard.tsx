@@ -54,7 +54,7 @@ export default function Dashboard() {
                 <Spacer></Spacer>
                 <ReportCard title="Total Tenants" body={`${cardMetrics.totalTenants}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
                 <Spacer></Spacer>
-                <ReportCard title="Rent Collections" body={`${cardMetrics.rentCollections}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
+                <ReportCard title={`${format(new Date(), 'MMMM')} Rent Collections`} body={`${cardMetrics.rentCollections}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
                 <Spacer></Spacer>
                 <ReportCard title="Vacant Rooms" body={`${cardMetrics.vacantRooms}`} icon={<FaRegMoneyBillAlt size="50" />}></ReportCard>
                 <Spacer></Spacer>

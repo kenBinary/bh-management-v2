@@ -343,7 +343,7 @@ export async function deleteNecessity(contractId: string, necessityId: string): 
 }
 
 export interface PaymentHistorySchema {
-    "Full Name": string;
+    "Bill Type": string;
     "Date Paid": string;
     "Bill Due": string;
     "Total Bill": number;
